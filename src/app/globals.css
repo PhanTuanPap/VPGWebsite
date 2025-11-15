@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-luxury-charcoal;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .btn-primary {
+    @apply bg-luxury-gold hover:bg-luxury-darkGold text-white font-semibold py-3 px-8 rounded-sm transition-colors duration-300;
+  }
+  
+  .btn-secondary {
+    @apply bg-luxury-charcoal hover:bg-gray-800 text-white font-semibold py-3 px-8 rounded-sm transition-colors duration-300;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-luxury-gold text-luxury-gold hover:bg-luxury-gold hover:text-white font-semibold py-3 px-8 rounded-sm transition-all duration-300;
+  }
+  
+  .input-custom {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-luxury-gold focus:border-transparent;
+  }
+  
+  .card-luxury {
+    @apply bg-white rounded-sm shadow-lg hover:shadow-xl transition-shadow duration-300;
+  }
+}
