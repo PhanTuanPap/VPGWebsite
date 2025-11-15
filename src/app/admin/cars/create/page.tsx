@@ -161,16 +161,6 @@ export default function CreateCarPage() {
           </div>
 
           <div className="mb-6">
-            <label className="block mb-2 font-medium">Hình ảnh chính (legacy)</label>
-            <input
-              type="text"
-              name="mainImage"
-              className="input-custom mb-2"
-              placeholder="/uploads/car.jpg"
-            />
-          </div>
-
-          <div className="mb-6">
             <label className="block mb-2 font-medium">Bài viết (HTML)</label>
             <textarea
               name="article"

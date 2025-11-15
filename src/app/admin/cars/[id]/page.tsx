@@ -17,6 +17,7 @@ export default function EditCarPage() {
   const [saving, setSaving] = useState(false)
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([])
+  const [newVersions, setNewVersions] = useState<Array<{ name: string; price: string }>>([])
 
   useEffect(() => {
     if (params.id) {
@@ -92,6 +93,19 @@ export default function EditCarPage() {
         }
       }
 
+      // Thêm các phiên bản mới
+      for (const version of newVersions.filter(v => v.name && v.price)) {
+        await fetch('/api/car-versions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            carId: params.id,
+            name: version.name,
+            price: parseFloat(version.price)
+          })
+        })
+      }
+
       alert('Cập nhật thành công!')
       router.push('/admin/cars')
     } catch (error) {
@@ -100,38 +114,18 @@ export default function EditCarPage() {
     }
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const formData = new FormData()
-    formData.append('file', file)
-
-    try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        const imageInput = document.querySelector<HTMLInputElement>('input[name="mainImage"]')
-        if (imageInput) {
-          imageInput.value = data.url
-        }
-        alert('Upload thành công!')
-      }
-    } catch (error) {
-      alert('Upload thất bại')
-    }
-  }
-
   const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>, imageType: string) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = e.target.files
+    if (!files) return
 
-    const preview = URL.createObjectURL(file)
-    setPendingImages([...pendingImages, { file, preview, imageType }])
+    const newImages: PendingImage[] = []
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      const preview = URL.createObjectURL(file)
+      newImages.push({ file, preview, imageType })
+    }
+
+    setPendingImages([...pendingImages, ...newImages])
     e.target.value = '' // Reset input
   }
 
@@ -148,6 +142,20 @@ export default function EditCarPage() {
 
   const handleUnmarkImageForDelete = (imageId: string) => {
     setImagesToDelete(imagesToDelete.filter(id => id !== imageId))
+  }
+
+  const addNewVersion = () => {
+    setNewVersions([...newVersions, { name: '', price: '' }])
+  }
+
+  const removeNewVersion = (index: number) => {
+    setNewVersions(newVersions.filter((_, i) => i !== index))
+  }
+
+  const updateNewVersion = (index: number, field: 'name' | 'price', value: string) => {
+    const updated = [...newVersions]
+    updated[index][field] = value
+    setNewVersions(updated)
   }
 
   if (loading) {
@@ -199,26 +207,6 @@ export default function EditCarPage() {
           </div>
 
           <div className="mb-6">
-            <label className="block mb-2 font-medium">Hình ảnh chính</label>
-            <input
-              type="text"
-              name="mainImage"
-              defaultValue={car.mainImage || ''}
-              className="input-custom mb-2"
-              placeholder="/uploads/car.jpg"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="input-custom"
-            />
-            {car.mainImage && (
-              <img src={car.mainImage} alt={car.name} className="mt-4 w-48 h-32 object-cover rounded" />
-            )}
-          </div>
-
-          <div className="mb-6">
             <label className="block mb-2 font-medium">Bài viết (HTML)</label>
             <textarea
               name="article"
@@ -228,24 +216,9 @@ export default function EditCarPage() {
             />
           </div>
 
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => router.push('/admin/cars')}
-              className="btn-secondary"
-              disabled={saving}
-            >
-              Hủy
-            </button>
-            <button type="submit" className="btn-primary" disabled={saving}>
-              {saving ? 'Đang lưu...' : 'Cập nhật'}
-            </button>
-          </div>
-        </form>
-
         {/* Images Section */}
-        <div className="mt-12 pt-8 border-t">
-          <h2 className="text-2xl font-bold mb-6">Quản lý hình ảnh</h2>
+        <div className="mt-8 pt-6 border-t">
+          <h2 className="text-xl font-bold mb-6">Quản lý hình ảnh</h2>
           
           {/* Banner Image */}
           <div className="mb-8">
@@ -302,6 +275,7 @@ export default function EditCarPage() {
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
                     onChange={(e) => handleAddImage(e, 'banner')}
                     className="hidden"
                   />
@@ -365,6 +339,7 @@ export default function EditCarPage() {
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
                     onChange={(e) => handleAddImage(e, 'main')}
                     className="hidden"
                   />
@@ -428,6 +403,7 @@ export default function EditCarPage() {
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
                     onChange={(e) => handleAddImage(e, 'gallery')}
                     className="hidden"
                   />
@@ -438,9 +414,20 @@ export default function EditCarPage() {
         </div>
 
         {/* Versions Section */}
-        <div className="mt-12 pt-8 border-t">
-          <h2 className="text-2xl font-bold mb-6">Các phiên bản</h2>
+        <div className="mt-8 pt-6 border-t">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Các phiên bản</h2>
+            <button
+              type="button"
+              onClick={addNewVersion}
+              className="btn-secondary text-sm"
+            >
+              + Thêm phiên bản
+            </button>
+          </div>
+          
           <div className="space-y-4">
+            {/* Existing Versions */}
             {car.versions?.map((version: any) => (
               <div key={version.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded">
                 <div className="flex-1">
@@ -448,6 +435,7 @@ export default function EditCarPage() {
                   <p className="text-luxury-gold">{Number(version.price).toLocaleString('vi-VN')} VNĐ</p>
                 </div>
                 <button
+                  type="button"
                   onClick={async () => {
                     if (!confirm('Xóa phiên bản này?')) return
                     try {
@@ -467,8 +455,66 @@ export default function EditCarPage() {
                 </button>
               </div>
             ))}
+            
+            {/* New Versions */}
+            {newVersions.map((version, index) => (
+              <div key={`new-${index}`} className="flex gap-4 items-start p-4 bg-green-50 rounded border-2 border-green-500">
+                <div className="flex-1 grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Tên phiên bản</label>
+                    <input
+                      type="text"
+                      value={version.name}
+                      onChange={(e) => updateNewVersion(index, 'name', e.target.value)}
+                      className="input-custom"
+                      placeholder="Eco"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium">Giá (VNĐ)</label>
+                    <input
+                      type="number"
+                      value={version.price}
+                      onChange={(e) => updateNewVersion(index, 'price', e.target.value)}
+                      className="input-custom"
+                      placeholder="1200000000"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-8">
+                  <div className="bg-green-600 text-white px-2 py-0.5 text-xs rounded">
+                    Mới
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeNewVersion(index)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    Xóa
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
+
+        {/* Submit Buttons */}
+        <div className="mt-8 pt-6 border-t">
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => router.push('/admin/cars')}
+              className="btn-secondary"
+              disabled={saving}
+            >
+              Hủy
+            </button>
+            <button type="submit" className="btn-primary" disabled={saving}>
+              {saving ? 'Đang lưu...' : 'Cập nhật'}
+            </button>
+          </div>
+        </div>
+        </form>
       </div>
     </div>
   )
