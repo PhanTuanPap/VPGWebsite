@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Toast from '@/components/Toast'
 
 interface PendingImage {
   file: File
@@ -16,6 +17,7 @@ export default function CreateCarPage() {
   ])
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
   const [saving, setSaving] = useState(false)
+  const [toast, setToast] = useState({ visible: false, message: '', variant: 'info' as 'info' | 'success' | 'error' | 'warning' })
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -80,10 +82,10 @@ export default function CreateCarPage() {
         }
       }
 
-      alert('Tạo xe thành công!')
-      router.push('/admin/cars')
+      setToast({ visible: true, message: 'Tạo xe thành công!', variant: 'success' })
+      setTimeout(() => router.push('/admin/cars'), 800)
     } catch (error: any) {
-      alert('Có lỗi xảy ra: ' + (error.message || 'Unknown error'))
+      setToast({ visible: true, message: 'Có lỗi xảy ra: ' + (error.message || 'Unknown error'), variant: 'error' })
       setSaving(false)
     }
   }
@@ -126,6 +128,7 @@ export default function CreateCarPage() {
 
   return (
     <div>
+      <Toast message={toast.message} visible={toast.visible} variant={toast.variant} onClose={() => setToast({ ...toast, visible: false })} />
       <h1 className="text-3xl font-bold mb-8">Thêm xe mới</h1>
 
       <div className="bg-white shadow rounded-lg p-8">

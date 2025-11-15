@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
+import Toast from '@/components/Toast'
 import {
   useReactTable,
   getCoreRowModel,
@@ -51,9 +52,11 @@ export default function AdminTestDrivesPage() {
         loadTestDrives()
       }
     } catch (error) {
-      alert('Có lỗi xảy ra')
+      setToast({ visible: true, message: 'Có lỗi xảy ra', variant: 'error' })
     }
   }
+
+  const [toast, setToast] = useState({ visible: false, message: '', variant: 'info' as 'info' | 'success' | 'error' | 'warning' })
 
   const columns = useMemo<ColumnDef<TestDrive>[]>(
     () => [
@@ -133,6 +136,7 @@ export default function AdminTestDrivesPage() {
 
   return (
     <div>
+      <Toast message={toast.message} visible={toast.visible} variant={toast.variant} onClose={() => setToast({ ...toast, visible: false })} />
       <h1 className="text-3xl font-bold mb-6">Danh sách đăng ký lái thử</h1>
 
       {/* Search */}

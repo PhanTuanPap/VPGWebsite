@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Toast from '@/components/Toast'
 import { useRouter, useParams } from 'next/navigation'
 
 interface PendingImage {
@@ -18,6 +19,7 @@ export default function EditCarPage() {
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([])
   const [newVersions, setNewVersions] = useState<Array<{ name: string; price: string }>>([])
+  const [toast, setToast] = useState({ visible: false, message: '', variant: 'info' as 'info' | 'success' | 'error' | 'warning' })
 
   useEffect(() => {
     if (params.id) {
@@ -110,10 +112,10 @@ export default function EditCarPage() {
         })
       }
 
-      alert('Cập nhật thành công!')
-      router.push('/admin/cars')
+      setToast({ visible: true, message: 'Cập nhật thành công!', variant: 'success' })
+      setTimeout(() => router.push('/admin/cars'), 800)
     } catch (error) {
-      alert('Có lỗi xảy ra')
+      setToast({ visible: true, message: 'Có lỗi xảy ra', variant: 'error' })
       setSaving(false)
     }
   }
@@ -172,6 +174,7 @@ export default function EditCarPage() {
 
   return (
     <div>
+      <Toast message={toast.message} visible={toast.visible} variant={toast.variant} onClose={() => setToast({ ...toast, visible: false })} />
       <h1 className="text-3xl font-bold mb-8">Chỉnh sửa xe: {car.name}</h1>
 
       <div className="bg-white shadow rounded-lg p-8">
@@ -493,9 +496,9 @@ export default function EditCarPage() {
                   <p className="font-semibold">{version.name}</p>
                   <p className="text-luxury-gold">{Number(version.price).toLocaleString('vi-VN')} VNĐ</p>
                 </div>
-                <button
-                  type="button"
-                  onClick={async () => {
+                  <button
+                    type="button"
+                    onClick={async () => {
                     if (!confirm('Xóa phiên bản này?')) return
                     try {
                       const res = await fetch(`/api/car-versions/${version.id}`, {
@@ -505,7 +508,7 @@ export default function EditCarPage() {
                         window.location.reload()
                       }
                     } catch (error) {
-                      alert('Có lỗi xảy ra')
+                      setToast({ visible: true, message: 'Có lỗi xảy ra', variant: 'error' })
                     }
                   }}
                   className="text-red-600 hover:text-red-900"

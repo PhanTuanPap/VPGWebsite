@@ -1,11 +1,13 @@
-'use client'
+"use client"
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import Toast from '@/components/Toast'
 
 export default function CreateCustomerPage() {
   const router = useRouter()
   const [imageUrl, setImageUrl] = useState('')
+  const [toast, setToast] = useState({ visible: false, message: '', variant: 'info' as 'info' | 'success' | 'error' | 'warning' })
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -25,13 +27,13 @@ export default function CreateCustomerPage() {
       })
 
       if (res.ok) {
-        alert('Thêm khách hàng thành công!')
-        router.push('/admin/customers')
+        setToast({ visible: true, message: 'Thêm khách hàng thành công!', variant: 'success' })
+        setTimeout(() => router.push('/admin/customers'), 800)
       } else {
-        alert('Có lỗi xảy ra')
+        setToast({ visible: true, message: 'Có lỗi xảy ra', variant: 'error' })
       }
     } catch (error) {
-      alert('Có lỗi xảy ra')
+      setToast({ visible: true, message: 'Có lỗi xảy ra', variant: 'error' })
     }
   }
 
@@ -55,15 +57,16 @@ export default function CreateCustomerPage() {
           imageInput.value = data.url
         }
         setImageUrl(data.url)
-        alert('Upload thành công!')
+        setToast({ visible: true, message: 'Upload thành công!', variant: 'success' })
       }
     } catch (error) {
-      alert('Upload thất bại')
+      setToast({ visible: true, message: 'Upload thất bại', variant: 'error' })
     }
   }
 
   return (
     <div>
+      <Toast message={toast.message} visible={toast.visible} variant={toast.variant} onClose={() => setToast({ ...toast, visible: false })} />
       <h1 className="text-3xl font-bold mb-8">Thêm khách hàng mới</h1>
 
       <div className="bg-white shadow rounded-lg p-8 max-w-2xl">

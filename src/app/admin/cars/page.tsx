@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import Toast from '@/components/Toast'
 import {
   useReactTable,
   getCoreRowModel,
@@ -53,9 +54,11 @@ export default function AdminCarsPage() {
         loadCars()
       }
     } catch (error) {
-      alert('Có lỗi xảy ra')
+      setToast({ visible: true, message: 'Có lỗi xảy ra', variant: 'error' })
     }
   }
+
+  const [toast, setToast] = useState({ visible: false, message: '', variant: 'info' as 'info' | 'success' | 'error' | 'warning' })
 
   const columns = useMemo<ColumnDef<Car>[]>(
     () => [
@@ -164,6 +167,7 @@ export default function AdminCarsPage() {
 
   return (
     <div>
+      <Toast message={toast.message} visible={toast.visible} variant={toast.variant} onClose={() => setToast({ ...toast, visible: false })} />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold">Quản lý xe</h1>
         <a href="/admin/cars/create" className="btn-primary">

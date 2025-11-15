@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import Toast from '@/components/Toast'
 
 export default function EditCustomerPage() {
   const router = useRouter()
   const params = useParams()
   const [customer, setCustomer] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [toast, setToast] = useState({ visible: false, message: '', variant: 'info' as 'info' | 'success' | 'error' | 'warning' })
 
   useEffect(() => {
     if (params.id) {
@@ -42,13 +44,13 @@ export default function EditCustomerPage() {
       })
 
       if (res.ok) {
-        alert('Cập nhật thành công!')
+        setToast({ visible: true, message: 'Cập nhật thành công!', variant: 'success' })
         router.push('/admin/customers')
       } else {
-        alert('Có lỗi xảy ra')
+        setToast({ visible: true, message: 'Có lỗi xảy ra', variant: 'error' })
       }
     } catch (error) {
-      alert('Có lỗi xảy ra')
+      setToast({ visible: true, message: 'Có lỗi xảy ra', variant: 'error' })
     }
   }
 
@@ -72,10 +74,10 @@ export default function EditCustomerPage() {
           imageInput.value = data.url
         }
         setCustomer({ ...customer, imageUrl: data.url })
-        alert('Upload thành công!')
+        setToast({ visible: true, message: 'Upload thành công!', variant: 'success' })
       }
     } catch (error) {
-      alert('Upload thất bại')
+      setToast({ visible: true, message: 'Upload thất bại', variant: 'error' })
     }
   }
 
@@ -89,6 +91,7 @@ export default function EditCustomerPage() {
 
   return (
     <div>
+      <Toast message={toast.message} visible={toast.visible} variant={toast.variant} onClose={() => setToast({ ...toast, visible: false })} />
       <h1 className="text-3xl font-bold mb-8">Chỉnh sửa khách hàng: {customer.name}</h1>
 
       <div className="bg-white shadow rounded-lg p-8 max-w-2xl">
