@@ -305,6 +305,20 @@ docker-compose exec app npx prisma db seed
 
 Để được hỗ trợ, vui lòng tạo issue trên repository hoặc liên hệ qua email.
 
+## 🔔 Zalo OA Notifications
+
+To enable notifications to your personal Zalo through your Official Account (OA), set the following environment variables in your `.env` (or in production):
+
+```env
+ZALO_OA_ACCESS_TOKEN="your_zalo_oa_access_token"
+ZALO_OA_ADMIN_PHONE="+849XXXXXXXX"
+```
+
+- `ZALO_OA_ACCESS_TOKEN`: Access token for your Zalo OA (server key).
+- `ZALO_OA_ADMIN_PHONE`: The admin phone number to receive messages (international format, e.g. `+849...`).
+
+The application will attempt to send a short text notification to the admin when customers create price quote requests or test drive registrations. Notifications are best-effort and will not block the API response if they fail.
+
 ## 📄 License
 
 MIT License

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { sendZaloOAToAdmin } from '@/lib/zalo'
 
 export async function GET() {
   try {
@@ -28,6 +29,14 @@ export async function POST(request: Request) {
         testDate: new Date(testDate)
       }
     })
+
+    // Notify admin via Zalo OA (best-effort)
+    try {
+      const msg = `ĐĂNG KÝ LÁI THỬ mới\nTên: ${fullName}\nSĐT: ${phone}\nXe: ${carName || carId}\nNgày: ${testDate}`
+      await sendZaloOAToAdmin(msg)
+    } catch (err) {
+      console.error('Failed to notify admin via Zalo OA', err)
+    }
 
     return NextResponse.json(testDrive)
   } catch (error) {
