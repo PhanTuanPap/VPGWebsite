@@ -1,9 +1,32 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+import {
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  getPaginationRowModel,
+  flexRender,
+  ColumnDef,
+  SortingState,
+  ColumnFiltersState,
+} from '@tanstack/react-table'
+
+interface TestDrive {
+  id: string
+  fullName: string
+  phone: string
+  carName: string
+  testDate: string
+  createdAt: string
+}
 
 export default function AdminTestDrivesPage() {
-  const [testDrives, setTestDrives] = useState<any[]>([])
+  const [testDrives, setTestDrives] = useState<TestDrive[]>([])
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [globalFilter, setGlobalFilter] = useState('')
 
   useEffect(() => {
     loadTestDrives()
@@ -32,50 +55,209 @@ export default function AdminTestDrivesPage() {
     }
   }
 
+  const columns = useMemo<ColumnDef<TestDrive>[]>(
+    () => [
+      {
+        accessorKey: 'fullName',
+        header: 'Họ tên',
+        cell: (info) => (
+          <div className="font-medium text-gray-900 truncate" title={info.getValue() as string}>
+            {info.getValue() as string}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'phone',
+        header: 'Số điện thoại',
+        cell: (info) => (
+          <div className="text-gray-700">{info.getValue() as string}</div>
+        ),
+      },
+      {
+        accessorKey: 'carName',
+        header: 'Mẫu xe',
+        cell: (info) => (
+          <div className="text-gray-700 truncate" title={info.getValue() as string}>
+            {info.getValue() as string}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'testDate',
+        header: 'Ngày lái thử',
+        cell: (info) => (
+          <div className="text-gray-700">
+            {new Date(info.getValue() as string).toLocaleDateString('vi-VN')}
+          </div>
+        ),
+      },
+      {
+        id: 'actions',
+        header: 'Thao tác',
+        cell: ({ row }) => (
+          <div className="flex justify-end">
+            <button
+              onClick={() => handleDelete(row.original.id)}
+              className="text-red-600 hover:text-red-900 font-medium"
+            >
+              Xóa
+            </button>
+          </div>
+        ),
+      },
+    ],
+    []
+  )
+
+  const table = useReactTable({
+    data: testDrives,
+    columns,
+    state: {
+      sorting,
+      columnFilters,
+      globalFilter,
+    },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
+  })
+
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">Danh sách đăng ký lái thử</h1>
+      <h1 className="text-3xl font-bold mb-6">Danh sách đăng ký lái thử</h1>
 
+      {/* Search */}
+      <div className="mb-4">
+        <input
+          type="text"
+          value={globalFilter ?? ''}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          placeholder="Tìm kiếm..."
+          className="input-custom max-w-sm"
+        />
+      </div>
+
+      {/* Table */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Họ tên
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Số điện thoại
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Mẫu xe
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Ngày lái thử
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                Thao tác
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {testDrives.map((td) => (
-              <tr key={td.id}>
-                <td className="px-6 py-4">{td.fullName}</td>
-                <td className="px-6 py-4">{td.phone}</td>
-                <td className="px-6 py-4">{td.carName}</td>
-                <td className="px-6 py-4">{new Date(td.testDate).toLocaleDateString('vi-VN')}</td>
-                <td className="px-6 py-4 text-right">
-                  <button
-                    onClick={() => handleDelete(td.id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Xóa
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-fixed">
+            <thead className="bg-gray-50">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header, index) => (
+                    <th
+                      key={header.id}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      style={{
+                        width: index === 0 ? '25%' : index === 1 ? '15%' : index === 2 ? '25%' : index === 3 ? '20%' : '15%'
+                      }}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <div
+                          className={
+                            header.column.getCanSort()
+                              ? 'cursor-pointer select-none flex items-center gap-2'
+                              : ''
+                          }
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getCanSort() && (
+                            <span className="text-gray-400">
+                              {{
+                                asc: '↑',
+                                desc: '↓',
+                              }[header.column.getIsSorted() as string] ?? '↕'}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="px-6 py-8 text-center text-gray-500">
+                    Không có dữ liệu
+                  </td>
+                </tr>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr key={row.id} className="hover:bg-gray-50">
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-6 py-4">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-gray-200">
+          <div className="text-sm text-gray-700">
+            Hiển thị {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} -{' '}
+            {Math.min(
+              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+              table.getFilteredRowModel().rows.length
+            )}{' '}
+            trong tổng số {table.getFilteredRowModel().rows.length} đăng ký
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+              className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ««
+            </button>
+            <button
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+              className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ‹
+            </button>
+            <span className="text-sm text-gray-700">
+              Trang {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
+            </span>
+            <button
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+              className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ›
+            </button>
+            <button
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+              className="px-3 py-1 border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              »»
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
