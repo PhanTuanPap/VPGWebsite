@@ -236,7 +236,7 @@ export default function HomePage() {
             {cars.map((car) => {
               const mainImage = car.images?.find((img: any) => img.imageType === 'main')?.imageUrl || car.mainImage
               return (
-              <Link key={car.id} href={`/cars/${car.slug}`}>
+              <Link key={car.id} href={`/san-pham/${car.slug}`}>
                 <div className="card-luxury overflow-hidden group">
                   {mainImage && (
                     <div className="relative h-64 overflow-hidden">
