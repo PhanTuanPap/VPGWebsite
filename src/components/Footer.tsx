@@ -16,25 +16,29 @@ export default function Footer() {
   return (
     <footer className="bg-luxury-charcoal text-white py-12">
       <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Logo & Company Info */}
           <div>
-            <div className="text-2xl font-bold text-luxury-gold mb-4">VPG</div>
-            <h3 className="font-semibold mb-2">Công ty TNHH VPG Auto</h3>
-            <p className="text-gray-400 text-sm">
-              Đại lý ủy quyền chính thức của VinFast
+            <div className="text-2xl font-bold text-white mb-2">Vinfast VPG An Giang</div>
+            {/* <h3 className="font-semibold mb-2">Công ty TNHH VinFast VPG An Giang</h3> */}
+            <p className="text-gray-400 text-sm text-luxury-cream">
+              Đại lý ủy quyền chính thức của VinFast tại An Giang
             </p>
+            <div className="space-y-2 text-sm text-gray-400 mt-3">
+              <p>Địa chỉ: Số 2070, Trần Hưng Đạo, Mỹ Thới, An Giang</p>
+              <p>Điện thoại: 0363 789 117</p>
+              {/* <p>Email: info@vpgauto.vn</p> */}
+            </div>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact Info
           <div>
             <h3 className="font-semibold mb-4">Liên hệ</h3>
             <div className="space-y-2 text-sm text-gray-400">
-              <p>Địa chỉ: Số 123 Đường ABC, Quận XYZ, TP. HCM</p>
-              <p>Điện thoại: 0123 456 789</p>
-              <p>Email: info@vpgauto.vn</p>
+              <p>Địa chỉ: Số 2070, Trần Hưng Đạo, Mỹ Thới, An Giang</p>
+              <p>Điện thoại: 0363 789 117</p>
             </div>
-          </div>
+          </div> */}
 
           {/* Products */}
           <div>

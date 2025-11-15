@@ -11,8 +11,15 @@ export default function Header() {
       <nav className="container-custom">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <div className="text-2xl font-bold text-luxury-gold">VPG</div>
+          <Link href="/" className="flex items-center gap-3">
+            <img 
+              src="/default/vinfastlogo.png" 
+              alt="VinFast Logo" 
+              className="h-12 w-auto"
+            />
+            {/* <div className="flex flex-col">
+              <span className="text-base font-bold text-luxury-charcoal leading-tight">VinFast VPG An Giang</span>
+            </div> */}
           </Link>
 
           {/* Desktop Navigation */}

@@ -1,12 +1,17 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { generateSEO, generateOrganizationStructuredData } from '@/lib/seo'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'VPG Auto - Đại lý VinFast',
-  description: 'Đại lý ủy quyền chính thức của VinFast',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  ...generateSEO({
+    title: undefined, // Will use default site name
+    description: 'Đại lý ủy quyền chính thức của VinFast tại Việt Nam. Cung cấp đầy đủ các dòng xe VinFast với giá tốt nhất, dịch vụ tư vấn chuyên nghiệp.',
+    keywords: 'VinFast, xe điện, ô tô điện, VF8, VF9, VF5, VFe34, đại lý VinFast, mua xe VinFast, giá xe VinFast, lái thử VinFast',
+  })
 }
 
 export default function RootLayout({
@@ -14,8 +19,19 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const organizationSchema = generateOrganizationStructuredData()
+
   return (
     <html lang="vi">
+      <head>
+        <link rel="icon" href="/default/fa-icon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/default/fa-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+      </head>
       <body className={inter.variable}>
         {children}
       </body>

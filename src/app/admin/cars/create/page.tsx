@@ -30,6 +30,10 @@ export default function CreateCarPage() {
         description: formData.get('description'),
         article: formData.get('article'),
         mainImage: formData.get('mainImage'),
+        metaTitle: formData.get('metaTitle'),
+        metaDescription: formData.get('metaDescription'),
+        metaKeywords: formData.get('metaKeywords'),
+        ogImage: formData.get('ogImage'),
         versions: versions.filter(v => v.name && v.price).map(v => ({
           name: v.name,
           price: parseFloat(v.price)
@@ -168,6 +172,57 @@ export default function CreateCarPage() {
               className="input-custom font-mono text-sm"
               placeholder="<h2>Giới thiệu</h2><p>...</p>"
             />
+          </div>
+
+          {/* SEO Section */}
+          <div className="mb-6 pt-6 border-t">
+            <h2 className="text-xl font-bold mb-6">SEO & Social Media</h2>
+            
+            <div className="mb-6">
+              <label className="block mb-2 font-medium">Meta Title</label>
+              <input
+                type="text"
+                name="metaTitle"
+                placeholder="Nếu để trống sẽ dùng tên xe"
+                className="input-custom"
+                maxLength={60}
+              />
+              <p className="text-sm text-gray-500 mt-1">Độ dài tối ưu: 50-60 ký tự</p>
+            </div>
+
+            <div className="mb-6">
+              <label className="block mb-2 font-medium">Meta Description</label>
+              <textarea
+                name="metaDescription"
+                placeholder="Mô tả ngắn gọn về xe để hiển thị trên Google"
+                rows={3}
+                className="input-custom"
+                maxLength={160}
+              />
+              <p className="text-sm text-gray-500 mt-1">Độ dài tối ưu: 150-160 ký tự</p>
+            </div>
+
+            <div className="mb-6">
+              <label className="block mb-2 font-medium">Meta Keywords</label>
+              <input
+                type="text"
+                name="metaKeywords"
+                placeholder="VinFast VF8, xe điện, ô tô điện..."
+                className="input-custom"
+              />
+              <p className="text-sm text-gray-500 mt-1">Các từ khóa cách nhau bằng dấu phẩy</p>
+            </div>
+
+            <div className="mb-6">
+              <label className="block mb-2 font-medium">OG Image URL (cho Facebook, Twitter)</label>
+              <input
+                type="url"
+                name="ogImage"
+                placeholder="https://example.com/image.jpg"
+                className="input-custom"
+              />
+              <p className="text-sm text-gray-500 mt-1">Nếu để trống sẽ dùng ảnh main. Kích thước khuyến nghị: 1200x630px</p>
+            </div>
           </div>
 
           {/* Images Section */}
