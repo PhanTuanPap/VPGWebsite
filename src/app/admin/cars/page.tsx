@@ -19,7 +19,7 @@ interface Car {
   name: string
   slug: string
   versions?: any[]
-  images?: { id: string; url: string; imageType: string }[]
+  images?: { id: string; imageUrl: string; imageType: string }[]
   createdAt: string
 }
 
@@ -67,7 +67,7 @@ export default function AdminCarsPage() {
           debugger
           return mainImage?.imageUrl ? (
             <img 
-              src={mainImage.imageUrl} 
+              src={mainImage?.imageUrl} 
               alt={row.original.name}
               className="w-16 h-16 object-contain rounded"
               onError={(e) => {
