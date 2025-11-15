@@ -34,16 +34,18 @@ export default function HomePage() {
       <section className="relative h-[60vh] md:h-[80vh] bg-gray-900 overflow-hidden">
         {cars.length > 0 && (
           <>
-            {cars.map((car, index) => (
+            {cars.map((car, index) => {
+              const bannerImage = car.images?.find((img: any) => img.imageType === 'banner')?.imageUrl || car.mainImage
+              return (
               <div
                 key={car.id}
                 className={`absolute inset-0 transition-opacity duration-1000 ${
                   index === currentSlide ? 'opacity-100' : 'opacity-0'
                 }`}
               >
-                {car.mainImage && (
+                {bannerImage && (
                   <Image
-                    src={car.mainImage}
+                    src={bannerImage}
                     alt={car.name}
                     fill
                     className="object-cover"
@@ -65,7 +67,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-            ))}
+            )})}
             
             {/* Slider dots */}
             <div className="absolute bottom-8 left-0 right-0 flex justify-center space-x-2">
@@ -88,13 +90,15 @@ export default function HomePage() {
         <div className="container-custom">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Dòng xe VinFast</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {cars.map((car) => (
+            {cars.map((car) => {
+              const mainImage = car.images?.find((img: any) => img.imageType === 'main')?.imageUrl || car.mainImage
+              return (
               <Link key={car.id} href={`/cars/${car.slug}`}>
                 <div className="card-luxury overflow-hidden group">
-                  {car.mainImage && (
+                  {mainImage && (
                     <div className="relative h-64 overflow-hidden">
                       <Image
-                        src={car.mainImage}
+                        src={mainImage}
                         alt={car.name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -111,7 +115,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </Link>
-            ))}
+            )})}
           </div>
         </div>
       </section>

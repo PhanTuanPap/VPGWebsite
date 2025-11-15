@@ -55,12 +55,14 @@ export default function BangGiaPage() {
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">Bảng giá xe VinFast</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {cars.map((car) => (
+          {cars.map((car) => {
+            const mainImage = car.images?.find((img: any) => img.imageType === 'main')?.imageUrl || car.mainImage
+            return (
             <div key={car.id} className="card-luxury overflow-hidden">
-              {car.mainImage && (
+              {mainImage && (
                 <div className="relative h-64">
                   <Image
-                    src={car.mainImage}
+                    src={mainImage}
                     alt={car.name}
                     fill
                     className="object-cover"
@@ -97,7 +99,7 @@ export default function BangGiaPage() {
                 </div>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       </div>
 

@@ -56,6 +56,7 @@ model CarImage {
   id        String   @id @default(cuid())
   carId     String
   imageUrl  String
+  imageType String   // "banner", "main", "gallery"
   order     Int      @default(0)
   createdAt DateTime @default(now())
   

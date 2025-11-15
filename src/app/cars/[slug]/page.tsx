@@ -84,7 +84,9 @@ export default function CarDetailPage() {
     )
   }
 
-  const images = car.images && car.images.length > 0 ? car.images : (car.mainImage ? [{imageUrl: car.mainImage}] : [])
+  const galleryImages = car.images?.filter((img: any) => img.imageType === 'gallery') || []
+  const mainImage = car.images?.find((img: any) => img.imageType === 'main')?.imageUrl || car.mainImage
+  const images = galleryImages.length > 0 ? galleryImages : (mainImage ? [{imageUrl: mainImage}] : [])
 
   return (
     <div className="py-16">
