@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendZaloOAToAdmin } from '@/lib/zalo'
+import { sendEmailToAdmin } from '@/lib/mail'
 
 export async function GET() {
   try {
@@ -36,6 +37,15 @@ export async function POST(request: Request) {
       await sendZaloOAToAdmin(msg)
     } catch (err) {
       console.error('Failed to notify admin via Zalo OA', err)
+    }
+
+    // Send email to admin (best-effort)
+    try {
+      const subject = `Đăng ký lái thử mới từ ${fullName}`
+      const text = `Tên: ${fullName}\nSĐT: ${phone}\nXe: ${carName || carId}\nNgày: ${testDate}\nID: ${testDrive.id}`
+      await sendEmailToAdmin({ subject, text })
+    } catch (err) {
+      console.error('Failed to send admin email', err)
     }
 
     return NextResponse.json(testDrive)

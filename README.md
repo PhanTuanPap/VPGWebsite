@@ -319,6 +319,40 @@ ZALO_OA_ADMIN_PHONE="+849XXXXXXXX"
 
 The application will attempt to send a short text notification to the admin when customers create price quote requests or test drive registrations. Notifications are best-effort and will not block the API response if they fail.
 
+Control sending behavior with environment flags:
+
+```env
+# Send Zalo OA messages (true/false)
+SEND_ZALO=true
+
+# Send emails via SMTP (true/false)
+SEND_MAIL=true
+```
+
+Set these to `false` to disable sending in development or staging.
+
+## ✉️ Email Notifications (SMTP)
+
+To receive email notifications when users request price quotes or test drives, configure SMTP variables in your environment:
+
+```env
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your_smtp_user@example.com
+SMTP_PASS=your_smtp_password
+EMAIL_ADMIN=you@example.com
+```
+
+- `SMTP_HOST`: SMTP server host.
+- `SMTP_PORT`: SMTP server port (587, 465, etc.).
+- `SMTP_USER`: SMTP username.
+- `SMTP_PASS`: SMTP password.
+- `EMAIL_ADMIN`: Admin email address to receive notifications.
+
+The application uses `nodemailer` (loaded dynamically) to send mail from server-side API routes. Failures are logged and do not block the API response.
+
+Testing locally: you can use a testing SMTP service such as Mailtrap, or Gmail SMTP (with App Password) for quick tests.
+
 ## 📄 License
 
 MIT License

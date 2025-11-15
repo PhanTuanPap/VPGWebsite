@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import Toast from '@/components/Toast'
 
 interface CarDetailClientProps {
   car: any
@@ -11,11 +12,14 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
   const [currentImage, setCurrentImage] = useState(0)
   const [showPriceQuoteModal, setShowPriceQuoteModal] = useState(false)
   const [showTestDriveModal, setShowTestDriveModal] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toast, setToast] = useState({ visible: false, message: '' })
 
   const handlePriceQuote = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setIsSubmitting(true)
     const formData = new FormData(e.currentTarget)
-    
+
     const data = {
       fullName: formData.get('fullName'),
       phone: formData.get('phone'),
@@ -32,18 +36,23 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
       })
 
       if (res.ok) {
-        alert('Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm.')
+        setToast({ visible: true, message: 'Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm.' })
         setShowPriceQuoteModal(false)
+      } else {
+        setToast({ visible: true, message: 'Có lỗi xảy ra, vui lòng thử lại.' })
       }
     } catch (error) {
-      alert('Có lỗi xảy ra, vui lòng thử lại.')
+      setToast({ visible: true, message: 'Có lỗi xảy ra, vui lòng thử lại.' })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   const handleTestDrive = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setIsSubmitting(true)
     const formData = new FormData(e.currentTarget)
-    
+
     const data = {
       fullName: formData.get('fullName'),
       phone: formData.get('phone'),
@@ -60,11 +69,15 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
       })
 
       if (res.ok) {
-        alert('Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm.')
+        setToast({ visible: true, message: 'Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm.' })
         setShowTestDriveModal(false)
+      } else {
+        setToast({ visible: true, message: 'Có lỗi xảy ra, vui lòng thử lại.' })
       }
     } catch (error) {
-      alert('Có lỗi xảy ra, vui lòng thử lại.')
+      setToast({ visible: true, message: 'Có lỗi xảy ra, vui lòng thử lại.' })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -74,6 +87,7 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
 
   return (
     <div className="py-16">
+      <Toast message={toast.message} visible={toast.visible} onClose={() => setToast({ ...toast, visible: false })} />
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Image Slider */}
@@ -203,7 +217,16 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
                 <button type="button" onClick={() => setShowPriceQuoteModal(false)} className="btn-secondary flex-1">
                   Hủy
                 </button>
-                <button type="submit" className="btn-primary flex-1">Gửi</button>
+                <button type="submit" className="btn-primary flex-1 flex items-center justify-center">
+                  {isSubmitting ? (
+                    <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                  ) : (
+                    'Gửi'
+                  )}
+                </button>
               </div>
             </form>
           </div>
@@ -232,7 +255,16 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
                 <button type="button" onClick={() => setShowTestDriveModal(false)} className="btn-secondary flex-1">
                   Hủy
                 </button>
-                <button type="submit" className="btn-primary flex-1">Đăng ký</button>
+                <button type="submit" className="btn-primary flex-1 flex items-center justify-center">
+                  {isSubmitting ? (
+                    <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                  ) : (
+                    'Đăng ký'
+                  )}
+                </button>
               </div>
             </form>
           </div>

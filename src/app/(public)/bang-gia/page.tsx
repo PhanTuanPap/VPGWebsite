@@ -1,13 +1,16 @@
-'use client'
+"use client"
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import Toast from '@/components/Toast'
 
 export default function BangGiaPage() {
   const [cars, setCars] = useState<any[]>([])
   const [showTestDriveModal, setShowTestDriveModal] = useState(false)
   const [selectedCar, setSelectedCar] = useState<any>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toast, setToast] = useState({ visible: false, message: '' })
 
   useEffect(() => {
     fetch('/api/cars')
@@ -23,6 +26,7 @@ export default function BangGiaPage() {
 
   const handleSubmitTestDrive = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setIsSubmitting(true)
     const formData = new FormData(e.currentTarget)
     
     const data = {
@@ -41,16 +45,20 @@ export default function BangGiaPage() {
       })
 
       if (res.ok) {
-        alert('Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm.')
+        setToast({ visible: true, message: 'Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm.' })
         setShowTestDriveModal(false)
+      } else {
+        setToast({ visible: true, message: 'Có lỗi xảy ra, vui lòng thử lại.' })
       }
     } catch (error) {
-      alert('Có lỗi xảy ra, vui lòng thử lại.')
+      setToast({ visible: true, message: 'Có lỗi xảy ra, vui lòng thử lại.' })
     }
+    setIsSubmitting(false)
   }
 
   return (
     <div className="py-16 bg-gray-50">
+      <Toast message={toast.message} visible={toast.visible} onClose={() => setToast({ ...toast, visible: false })} />
       <div className="container-custom">
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">Bảng giá xe VinFast</h1>
         
@@ -90,12 +98,12 @@ export default function BangGiaPage() {
                   <Link href="/du-toan-chi-phi" className="btn-outline text-center flex-1">
                     Dự toán chi phí
                   </Link>
-                  <button 
-                    onClick={() => handleTestDrive(car)}
-                    className="btn-primary flex-1"
-                  >
-                    Đăng ký lái thử
-                  </button>
+                    <button 
+                      onClick={() => handleTestDrive(car)}
+                      className="btn-primary flex-1"
+                    >
+                      Đăng ký lái thử
+                    </button>
                 </div>
               </div>
             </div>
@@ -146,8 +154,15 @@ export default function BangGiaPage() {
                 >
                   Hủy
                 </button>
-                <button type="submit" className="btn-primary flex-1">
-                  Đăng ký
+                <button type="submit" className="btn-primary flex-1 flex items-center justify-center">
+                  {isSubmitting ? (
+                    <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                  ) : (
+                    'Đăng ký'
+                  )}
                 </button>
               </div>
             </form>

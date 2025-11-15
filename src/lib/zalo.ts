@@ -1,5 +1,6 @@
 const ZALO_OA_ACCESS_TOKEN = process.env.ZALO_OA_ACCESS_TOKEN || ''
 const ZALO_OA_ADMIN_PHONE = process.env.ZALO_OA_ADMIN_PHONE || ''
+const SEND_ZALO = String(process.env.SEND_ZALO || 'true').toLowerCase() === 'true'
 
 function getFetch() {
   // prefer global fetch (Next.js provides it on server). If not available, throw helpful error
@@ -8,6 +9,11 @@ function getFetch() {
 }
 
 export async function sendZaloOAMessage(recipientPhone: string, message: string) {
+  if (!SEND_ZALO) {
+    console.log('SEND_ZALO disabled; skipping Zalo OA message')
+    return
+  }
+
   if (!ZALO_OA_ACCESS_TOKEN || !ZALO_OA_ADMIN_PHONE) {
     console.warn('Zalo OA not configured: missing env vars')
     return

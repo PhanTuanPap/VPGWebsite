@@ -18,11 +18,13 @@
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "@tanstack/react-table": "^8.21.3",
+    "@types/nodemailer": "^7.0.3",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.0.0",
     "date-fns": "^3.0.6",
     "next": "14.0.4",
     "next-auth": "^4.24.5",
+    "nodemailer": "^7.0.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.2",
