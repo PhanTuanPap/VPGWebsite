@@ -52,3 +52,40 @@ export async function sendEmailToAdmin({ subject, text, html, to }: MailOptions)
     console.error('Failed to send email', err)
   }
 }
+
+export function buildAdminHtml(title: string, rows: Record<string, string | number | null | undefined>) {
+  const rowHtml = Object.entries(rows)
+    .map(([k, v]) => {
+      const value = v == null ? '' : String(v)
+      if (k.toLowerCase().includes('sđt') || k.toLowerCase().includes('phone')) {
+        // clickable phone
+        const tel = value.replace(/[^+0-9]/g, '')
+        return `
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600;color:#333">${k}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #eee;color:#1a73e8"><a href="tel:${tel}" style="color:#1a73e8;text-decoration:none">${value}</a></td>
+          </tr>`
+      }
+      return `
+        <tr>
+          <td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600;color:#333">${k}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #eee;color:#555">${value}</td>
+        </tr>`
+    })
+    .join('\n')
+
+  return `
+    <div style="font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#111;">
+      <div style="max-width:680px;margin:24px auto;padding:20px;border-radius:8px;background:#ffffff;border:1px solid #f0f0f0;box-shadow:0 6px 18px rgba(16,24,40,0.06)">
+        <h2 style="margin:0 0 12px 0;font-size:18px;color:#0f172a">${title}</h2>
+        <p style="margin:0 0 18px 0;color:#374151">Thông tin chi tiết phía dưới — nhấn số điện thoại để gọi trực tiếp.</p>
+
+        <table style="width:100%;border-collapse:collapse;background:transparent">
+          <tbody>
+            ${rowHtml}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `
+}

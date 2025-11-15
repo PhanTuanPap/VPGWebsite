@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendZaloOAToAdmin } from '@/lib/zalo'
-import { sendEmailToAdmin } from '@/lib/mail'
+import { sendEmailToAdmin, buildAdminHtml } from '@/lib/mail'
 
 export async function GET() {
   try {
@@ -43,7 +43,14 @@ export async function POST(request: Request) {
     try {
       const subject = `Đăng ký lái thử mới từ ${fullName}`
       const text = `Tên: ${fullName}\nSĐT: ${phone}\nXe: ${carName || carId}\nNgày: ${testDate}\nID: ${testDrive.id}`
-      await sendEmailToAdmin({ subject, text })
+      const html = buildAdminHtml(`Đăng ký lái thử mới từ ${fullName}`, {
+        'Tên': fullName,
+        'SĐT': phone,
+        'Xe': carName || carId,
+        'Ngày': testDate,
+        'ID': testDrive.id
+      })
+      await sendEmailToAdmin({ subject, text, html })
     } catch (err) {
       console.error('Failed to send admin email', err)
     }
