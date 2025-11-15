@@ -2,9 +2,16 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const pathname = usePathname()
+
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === href
+    return pathname?.startsWith(href)
+  }
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -24,16 +31,16 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-8">
-            <Link href="/" className="text-luxury-charcoal hover:text-luxury-gold transition-colors font-medium">
+            <Link href="/" className={`font-medium transition-colors ${isActive('/') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Trang chủ
             </Link>
-            <Link href="/bang-gia" className="text-luxury-charcoal hover:text-luxury-gold transition-colors font-medium">
+            <Link href="/bang-gia" className={`font-medium transition-colors ${isActive('/bang-gia') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Bảng giá
             </Link>
-            <Link href="/tinh-tien-tra-gop" className="text-luxury-charcoal hover:text-luxury-gold transition-colors font-medium">
+            <Link href="/tinh-tien-tra-gop" className={`font-medium transition-colors ${isActive('/tinh-tien-tra-gop') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Tính tiền trả góp
             </Link>
-            <Link href="/du-toan-chi-phi" className="text-luxury-charcoal hover:text-luxury-gold transition-colors font-medium">
+            <Link href="/du-toan-chi-phi" className={`font-medium transition-colors ${isActive('/du-toan-chi-phi') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Dự toán chi phí
             </Link>
           </div>
@@ -56,16 +63,16 @@ export default function Header() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden pb-4">
-            <Link href="/" className="block py-2 text-luxury-charcoal hover:text-luxury-gold transition-colors font-medium">
+            <Link href="/" onClick={() => setIsMenuOpen(false)} className={`block py-2 font-medium transition-colors ${isActive('/') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Trang chủ
             </Link>
-            <Link href="/bang-gia" className="block py-2 text-luxury-charcoal hover:text-luxury-gold transition-colors font-medium">
+            <Link href="/bang-gia" onClick={() => setIsMenuOpen(false)} className={`block py-2 font-medium transition-colors ${isActive('/bang-gia') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Bảng giá
             </Link>
-            <Link href="/tinh-tien-tra-gop" className="block py-2 text-luxury-charcoal hover:text-luxury-gold transition-colors font-medium">
+            <Link href="/tinh-tien-tra-gop" onClick={() => setIsMenuOpen(false)} className={`block py-2 font-medium transition-colors ${isActive('/tinh-tien-tra-gop') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Tính tiền trả góp
             </Link>
-            <Link href="/du-toan-chi-phi" className="block py-2 text-luxury-charcoal hover:text-luxury-gold transition-colors font-medium">
+            <Link href="/du-toan-chi-phi" onClick={() => setIsMenuOpen(false)} className={`block py-2 font-medium transition-colors ${isActive('/du-toan-chi-phi') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Dự toán chi phí
             </Link>
           </div>

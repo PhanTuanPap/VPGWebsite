@@ -62,9 +62,9 @@ export default function HomePage() {
                     priority={index === 0}
                   />
                 )}
-                <div className="absolute inset-0 bg-black bg-opacity-40" />
+                <div className="absolute inset-0 bg-black bg-opacity-40 bg-opacity-0" />
                 <div className="absolute inset-0 flex items-center justify-center text-center text-white">
-                  <div>
+                  <div className='hidden'>
                     <h1 className="text-4xl md:text-6xl font-bold mb-4">{car.name}</h1>
                     <p className="text-xl md:text-2xl mb-8">
                       {car.versions && car.versions.length > 0 && 
