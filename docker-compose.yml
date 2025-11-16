@@ -11,6 +11,7 @@ services:
       - .env.product
     volumes:
       - ./public/uploads:/app/public/uploads
+      - ./uploads:/uploads
     restart: unless-stopped
     depends_on:
       - db_host
