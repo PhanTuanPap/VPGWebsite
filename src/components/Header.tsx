@@ -31,16 +31,16 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-8">
-            <Link href="/" className={`font-medium transition-colors ${isActive('/') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
+            <Link href="/" className={`font-semibold transition-colors ${isActive('/') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Trang chủ
             </Link>
-            <Link href="/bang-gia" className={`font-medium transition-colors ${isActive('/bang-gia') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
+            <Link href="/bang-gia" className={`font-semibold transition-colors ${isActive('/bang-gia') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Bảng giá
             </Link>
-            <Link href="/tinh-tien-tra-gop" className={`font-medium transition-colors ${isActive('/tinh-tien-tra-gop') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
+            <Link href="/tinh-tien-tra-gop" className={`font-semibold transition-colors ${isActive('/tinh-tien-tra-gop') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Tính tiền trả góp
             </Link>
-            <Link href="/du-toan-chi-phi" className={`font-medium transition-colors ${isActive('/du-toan-chi-phi') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
+            <Link href="/du-toan-chi-phi" className={`font-semibold transition-colors ${isActive('/du-toan-chi-phi') ? 'text-luxury-gold' : 'text-luxury-charcoal hover:text-luxury-gold'}`}>
               Dự toán chi phí
             </Link>
           </div>
