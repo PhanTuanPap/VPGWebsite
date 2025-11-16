@@ -19,7 +19,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Logo & Company Info */}
           <div>
-            <div className="text-2xl font-bold text-white mb-2">Vinfast VPG An Giang</div>
+            <div className="text-2xl font-bold text-white mb-2">Vinfast VFG An Giang</div>
             {/* <h3 className="font-semibold mb-2">Công ty TNHH VinFast VPG An Giang</h3> */}
             <p className="text-gray-400 text-sm text-luxury-cream">
               Đại lý ủy quyền chính thức của VinFast tại An Giang
@@ -83,7 +83,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
-          <p>&copy; {new Date().getFullYear()} VPG Auto. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} VFG Auto. All rights reserved.</p>
         </div>
       </div>
     </footer>

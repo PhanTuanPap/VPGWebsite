@@ -101,7 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Desktop Sidebar - Fixed */}
         <aside className="hidden lg:block fixed top-0 left-0 bottom-0 w-56 bg-luxury-charcoal text-white border-r border-gray-800/20 overflow-y-auto">
           <div className="p-6 border-b border-gray-800/20">
-            <h2 className="text-xl font-semibold text-white">VPG <span className="text-luxury-gold">Admin</span></h2>
+            <h2 className="text-xl font-semibold text-white">VFG <span className="text-luxury-gold">Admin</span></h2>
             <p className="text-xs text-gray-300 mt-1">Quản trị hệ thống</p>
           </div>
           <nav className="py-4">

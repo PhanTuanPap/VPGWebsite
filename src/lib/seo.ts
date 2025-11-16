@@ -10,11 +10,11 @@ interface SEOConfig {
   siteName?: string
 }
 
-const DEFAULT_SITE_NAME = 'VinFast VPG An Giang'
+const DEFAULT_SITE_NAME = 'VinFast VFG An Giang'
 const DEFAULT_DESCRIPTION = 'Đại lý ủy quyền chính thức của VinFast tại An Giang. Cung cấp đầy đủ các dòng xe VinFast với giá tốt nhất, dịch vụ tư vấn chuyên nghiệp.'
 const DEFAULT_KEYWORDS = 'VinFast, xe điện, ô tô điện, VF8, VF9, VF5, VFe34, đại lý VinFast, mua xe VinFast, giá xe VinFast'
 const DEFAULT_IMAGE = '/images/default-og.jpg'
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://vpgauto.com'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://vfgangiang.com'
 
 export function generateSEO(config: SEOConfig): Metadata {
   const {
@@ -107,7 +107,7 @@ export function generateOrganizationStructuredData() {
   return {
     '@context': 'https://schema.org',
     '@type': 'AutomotiveBusiness',
-    name: 'VinFast VPG An Giang',
+    name: 'VinFast VFG An Giang',
     description: 'Đại lý ủy quyền chính thức của VinFast tại An Giang',
     url: SITE_URL,
     logo: `${SITE_URL}/logo.png`,
