@@ -6,6 +6,7 @@ uploads
 public/uploads
 .env
 .env.*
+!.env.product
 *.log
 coverage
 npm-debug.log*

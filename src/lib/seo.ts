@@ -79,6 +79,7 @@ export function generateSEO(config: SEOConfig): Metadata {
 
 export function generateCarStructuredData(car: any) {
   const mainImage = car.images?.find((img: any) => img.imageType === 'main')?.imageUrl || car.ogImage || car.mainImage
+  const mainImageUrl = mainImage ?? undefined
   const lowestPrice = car.versions?.length > 0 
     ? Math.min(...car.versions.map((v: any) => Number(v.price)))
     : 0
@@ -88,7 +89,7 @@ export function generateCarStructuredData(car: any) {
     '@type': 'Product',
     name: car.metaTitle || car.name,
     description: car.metaDescription || car.description,
-    image: mainImage,
+    image: mainImageUrl,
     brand: {
       '@type': 'Brand',
       name: 'VinFast',

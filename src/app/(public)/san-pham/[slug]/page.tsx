@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: car.metaTitle || car.name,
     description: car.metaDescription || car.description || `${car.name} - Giá từ ${lowestPrice} VNĐ. Đại lý chính thức VinFast. Tư vấn miễn phí, lái thử tận nhà.`,
     keywords: car.metaKeywords || `${car.name}, xe VinFast, giá ${car.name}, mua ${car.name}, lái thử ${car.name}`,
-    image: mainImage,
+    image: mainImage ?? undefined,
     url: `/cars/${car.slug}`,
     type: 'product',
   })
