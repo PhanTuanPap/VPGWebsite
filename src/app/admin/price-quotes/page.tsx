@@ -21,6 +21,7 @@ interface PriceQuote {
   carName: string
   paymentType: string
   createdAt: string
+  status?: number
 }
 
 export default function AdminPriceQuotesPage() {
@@ -95,15 +96,41 @@ export default function AdminPriceQuotesPage() {
         ),
       },
       {
+        accessorKey: 'status',
+        header: 'Trạng thái',
+        cell: ({ row }) => {
+          const st = row.original.status
+          const handleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+            const newStatus = parseInt(e.target.value)
+            try {
+              const res = await fetch(`/api/price-quotes/${row.original.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+              })
+              if (res.ok) loadPriceQuotes()
+            } catch (err) {
+              setToast({ visible: true, message: 'Không thể cập nhật trạng thái', variant: 'error' })
+            }
+          }
+
+          return (
+            <select defaultValue={st || 1} onChange={handleChange} className="input-custom max-w-xs">
+              <option value={1}>Pending</option>
+              <option value={2}>Contacted</option>
+              <option value={3}>Quoted</option>
+            </select>
+          )
+        },
+        enableSorting: false,
+      },
+      {
         id: 'actions',
         header: 'Thao tác',
         cell: ({ row }) => (
           <div className="flex justify-end">
-            <button
-              onClick={() => handleDelete(row.original.id)}
-              className="text-red-600 hover:text-red-900 font-medium"
-            >
-              Xóa
+            <button onClick={() => handleDelete(row.original.id)} className="text-red-600 hover:text-red-900">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
             </button>
           </div>
         ),

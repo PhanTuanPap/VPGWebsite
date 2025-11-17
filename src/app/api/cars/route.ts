@@ -25,26 +25,27 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, slug, description, article, mainImage, versions } = body
+    const { name, slug, description, article, mainImage, versions, tag } = body
+
+    const createData: any = {
+      name,
+      slug,
+      description,
+      article,
+      mainImage,
+    }
+
+    if (typeof tag !== 'undefined') createData.tag = tag
+
+    if (versions) {
+      createData.versions = {
+        create: versions.map((v: any) => ({ name: v.name, price: v.price }))
+      }
+    }
 
     const car = await prisma.car.create({
-      data: {
-        name,
-        slug,
-        description,
-        article,
-        mainImage,
-        versions: versions ? {
-          create: versions.map((v: any) => ({
-            name: v.name,
-            price: v.price
-          }))
-        } : undefined
-      },
-      include: {
-        versions: true,
-        images: true
-      }
+      data: createData,
+      include: { versions: true, images: true }
     })
 
     return NextResponse.json(car)

@@ -36,23 +36,15 @@ export async function PUT(
 ) {
   try {
     const body = await request.json()
-    const { name, slug, description, article, mainImage } = body
+    const { name, slug, description, article, mainImage, tag } = body
+
+    const updateData: any = { name, slug, description, article, mainImage }
+    if (typeof tag !== 'undefined') updateData.tag = tag
 
     const car = await prisma.car.update({
-      where: {
-        id: params.id
-      },
-      data: {
-        name,
-        slug,
-        description,
-        article,
-        mainImage
-      },
-      include: {
-        versions: true,
-        images: true
-      }
+      where: { id: params.id },
+      data: updateData,
+      include: { versions: true, images: true }
     })
 
     return NextResponse.json(car)

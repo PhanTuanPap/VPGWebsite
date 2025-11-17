@@ -45,6 +45,7 @@ export default function EditCarPage() {
 
       const data = {
         name: formData.get('name'),
+        tag: formData.get('tag') ? parseInt(String(formData.get('tag'))) : undefined,
         slug: formData.get('slug'),
         description: formData.get('description'),
         article: formData.get('article'),
@@ -201,6 +202,15 @@ export default function EditCarPage() {
                 className="input-custom"
               />
             </div>
+            <div>
+              <label className="block mb-2 font-medium">Tag</label>
+              <select name="tag" defaultValue={car.tag || ''} className="input-custom">
+                <option value="">Không</option>
+                <option value="1">New</option>
+                <option value="2">Hot</option>
+                <option value="3">Best Sale</option>
+              </select>
+            </div>
           </div>
 
           <div className="mb-6">
@@ -285,65 +295,7 @@ export default function EditCarPage() {
           {/* Banner Image */}
           <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4">Ảnh Banner</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {car.images?.filter((img: any) => img.imageType === 'banner' && !imagesToDelete.includes(img.id)).map((img: any) => (
-                <div key={img.id} className="relative group">
-                  <img src={img.imageUrl} alt="Banner" className="w-full h-32 object-cover rounded" />
-                  <button
-                    type="button"
-                    onClick={() => handleMarkImageForDelete(img.id)}
-                    className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    Xóa
-                  </button>
-                </div>
-              ))}
-              {car.images?.filter((img: any) => img.imageType === 'banner' && imagesToDelete.includes(img.id)).map((img: any) => (
-                <div key={img.id} className="relative group opacity-50">
-                  <img src={img.imageUrl} alt="Banner" className="w-full h-32 object-cover rounded" />
-                  <div className="absolute inset-0 bg-red-600 bg-opacity-50 flex items-center justify-center">
-                    <span className="text-white font-semibold">Sẽ xóa</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleUnmarkImageForDelete(img.id)}
-                    className="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-sm"
-                  >
-                    Hủy
-                  </button>
-                </div>
-              ))}
-              {pendingImages.filter(img => img.imageType === 'banner').map((img, index) => {
-                const actualIndex = pendingImages.indexOf(img)
-                return (
-                  <div key={`pending-${actualIndex}`} className="relative group">
-                    <img src={img.preview} alt="New Banner" className="w-full h-32 object-cover rounded border-2 border-green-500" />
-                    <div className="absolute top-0 left-0 bg-green-600 text-white px-2 py-0.5 text-xs rounded-br">
-                      Mới
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemovePendingImage(actualIndex)}
-                      className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                )
-              })}
-              <div className="border-2 border-dashed border-gray-300 rounded h-32 flex items-center justify-center hover:border-luxury-gold transition-colors">
-                <label className="cursor-pointer text-center">
-                  <span className="text-gray-500">+ Thêm banner</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => handleAddImage(e, 'banner')}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-            </div>
+            <p className="text-sm text-gray-500">Quản lý ảnh banner cho website nằm trong mục Quản lý hình ảnh gallery. (Cho phép upload nhiều ảnh với imageType = "banner")</p>
           </div>
 
           {/* Main Image */}

@@ -30,6 +30,7 @@ export default function AdminCarsPage() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
+  const [tagFilter, setTagFilter] = useState<string>('')
 
   useEffect(() => {
     loadCars()
@@ -111,6 +112,16 @@ export default function AdminCarsPage() {
         ),
       },
       {
+        accessorKey: 'tag',
+        header: 'Tag',
+        cell: (info) => {
+          const tag = info.getValue() as number | undefined
+          if (!tag) return <div className="text-gray-500">-</div>
+          return <div className="text-sm font-medium text-gray-700">{tag === 1 ? 'New' : tag === 2 ? 'Hot' : tag === 3 ? 'Best Sale' : '-'}</div>
+        },
+        enableSorting: false,
+      },
+      {
         accessorKey: 'versions',
         header: 'Số phiên bản',
         cell: (info) => {
@@ -120,31 +131,34 @@ export default function AdminCarsPage() {
         enableSorting: false,
       },
       {
-        id: 'actions',
-        header: 'Thao tác',
-        cell: ({ row }) => (
-          <div className="flex justify-end gap-3">
-            <a 
-              href={`/admin/cars/${row.original.id}`} 
-              className="text-luxury-gold hover:text-luxury-darkGold font-medium"
-            >
-              Sửa
-            </a>
-            <button
-              onClick={() => handleDelete(row.original.id)}
-              className="text-red-600 hover:text-red-900 font-medium"
-            >
-              Xóa
-            </button>
-          </div>
-        ),
+      id: 'actions',
+      header: 'Thao tác',
+      cell: ({ row }) => (
+        <div className="flex justify-end gap-3 items-center">
+          <a href={`/admin/cars/${row.original.id}`} className="text-luxury-gold hover:text-luxury-darkGold">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>
+          </a>
+          <button onClick={() => handleDelete(row.original.id)} className="text-red-600 hover:text-red-900">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </button>
+        </div>
+      ),
       },
     ],
     []
   )
 
   const table = useReactTable({
-    data: cars,
+    data: cars.filter(c => {
+      if (tagFilter) {
+        return String((c as any).tag) === tagFilter
+      }
+      return true
+    }).filter(c => {
+      if (!globalFilter) return true
+      const q = globalFilter.toLowerCase()
+      return c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q)
+    }),
     columns,
     state: {
       sorting,
@@ -177,13 +191,21 @@ export default function AdminCarsPage() {
 
       {/* Search */}
       <div className="mb-4">
-        <input
-          type="text"
-          value={globalFilter ?? ''}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Tìm kiếm xe..."
-          className="input-custom max-w-sm"
-        />
+        <div className="flex items-center gap-3">
+          <input
+            type="text"
+            value={globalFilter ?? ''}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            placeholder="Tìm kiếm xe..."
+            className="input-custom max-w-sm"
+          />
+          <select value={tagFilter} onChange={(e) => setTagFilter(e.target.value)} className="input-custom max-w-xs">
+            <option value="">Tất cả tag</option>
+            <option value="1">New</option>
+            <option value="2">Hot</option>
+            <option value="3">Best Sale</option>
+          </select>
+        </div>
       </div>
 
       {/* Table */}

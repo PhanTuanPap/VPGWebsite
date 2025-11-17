@@ -28,6 +28,7 @@ model Car {
   description String?       @db.Text
   article     String?       @db.Text
   mainImage   String?
+  tag         Int?
   
   // SEO Fields
   metaTitle       String?
@@ -63,7 +64,7 @@ model CarImage {
   id        String   @id @default(cuid())
   carId     String
   imageUrl  String
-  imageType String   // "banner", "main", "gallery"
+  imageType String   // "banner", "main", "gallery" — allow multiple banner images for site banner management
   order     Int      @default(0)
   createdAt DateTime @default(now())
   
@@ -79,6 +80,7 @@ model TestDrive {
   carId       String
   carName     String
   testDate    DateTime
+  status      Int?
   createdAt   DateTime @default(now())
   
   car         Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
@@ -93,6 +95,7 @@ model PriceQuote {
   carId       String
   carName     String
   paymentType String   // "full" or "installment"
+  status      Int?
   createdAt   DateTime @default(now())
   
   car         Car      @relation(fields: [carId], references: [id], onDelete: Cascade)

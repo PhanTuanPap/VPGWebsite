@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { TagLabels } from '@/lib/constants'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -238,6 +239,11 @@ export default function HomePage() {
               return (
               <Link key={car.id} href={`/san-pham/${car.slug}`}>
                 <div className="card-luxury overflow-hidden group">
+                  {car.tag && (
+                    <div className="absolute top-3 right-3 bg-luxury-gold text-white px-3 py-1 rounded text-sm font-semibold z-10">
+                      {TagLabels[car.tag] || 'Tag'}
+                    </div>
+                  )}
                   {mainImage && (
                     <div className="relative h-64 overflow-hidden">
                       <Image
