@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Toast from '@/components/Toast'
+import ConfirmModal from '@/components/ConfirmModal'
 import { useRouter } from 'next/navigation'
 
 export default function AdminGalleryPage() {
@@ -64,30 +65,44 @@ export default function AdminGalleryPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bạn có chắc muốn xóa banner này?')) return
-    try {
-      const res = await fetch(`/api/car-images/${id}`, { method: 'DELETE' })
-      if (res.ok) loadBanners()
-    } catch (err) {
-      setToast({ visible: true, message: 'Xóa thất bại', variant: 'error' })
-    }
+    setDeleteTarget({ type: 'banner', id })
   }
 
   const handleDeleteUpload = async (name: string) => {
-    if (!confirm('Xóa file upload này?')) return
+    setDeleteTarget({ type: 'upload', name })
+  }
+
+  const [deleteTarget, setDeleteTarget] = useState<any>(null)
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return
     try {
-      const res = await fetch('/api/uploads', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) })
-      const data = await res.json()
-      if (res.ok) {
-        setToast({ visible: true, message: 'Xóa thành công', variant: 'success' })
-        loadUploads()
-      } else {
-        setToast({ visible: true, message: data.error || 'Không thể xóa', variant: 'error' })
+      if (deleteTarget.type === 'banner') {
+        const res = await fetch(`/api/car-images/${deleteTarget.id}`, { method: 'DELETE' })
+        if (res.ok) {
+          setToast({ visible: true, message: 'Xóa thành công', variant: 'success' })
+          loadBanners()
+        } else {
+          setToast({ visible: true, message: 'Không thể xóa banner', variant: 'error' })
+        }
+      } else if (deleteTarget.type === 'upload') {
+        const res = await fetch('/api/uploads', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: deleteTarget.name }) })
+        const data = await res.json()
+        if (res.ok) {
+          setToast({ visible: true, message: 'Xóa thành công', variant: 'success' })
+          loadUploads()
+        } else {
+          setToast({ visible: true, message: data.error || 'Không thể xóa', variant: 'error' })
+        }
       }
     } catch (err) {
       setToast({ visible: true, message: 'Xóa thất bại', variant: 'error' })
+    } finally {
+      setDeleteTarget(null)
     }
   }
+
+  const cancelDelete = () => setDeleteTarget(null)
 
   return (
     <div>
@@ -142,6 +157,7 @@ export default function AdminGalleryPage() {
           </div>
         </div>
       </div>
+      <ConfirmModal open={!!deleteTarget} title="Xác nhận xóa" description={deleteTarget?.type === 'banner' ? 'Bạn có chắc muốn xóa banner này?' : 'Bạn có chắc muốn xóa file upload này?'} onConfirm={confirmDelete} onCancel={cancelDelete} />
     </div>
   )
 }
