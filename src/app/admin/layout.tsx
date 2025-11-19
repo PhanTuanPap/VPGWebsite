@@ -50,7 +50,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <nav className="py-6">
           {menuItems.map((item) => (
             <a key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)} className={`flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors ${isActive(item.href) ? 'bg-white/5 border-l-4 border-luxury-gold' : ''}`}>
-              <span className="w-5 h-5 text-gray-300">
+              <span className="w-5 h-5 text-gray-300 overflow-visible">
                 {item.key === 'dashboard' && (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
                     <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -69,6 +69,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
                     <path d="M5 12h14" strokeLinecap="round" />
                     <path d="M12 5v14" strokeLinecap="round" />
+                  </svg>
+                )}
+                {item.key === 'gallery' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3 15l5-5 4 4 5-6 5 7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+                {item.key === 'settings' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-5 h-5 transform scale-90">
+                    <path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" />
+                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06A2 2 0 015.3 17.88l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.3 6.7a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H11a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09c.12.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33l.06-.06A2 2 0 0119.7 6.12l-.06.06a1.65 1.65 0 00-.33 1.82V11c.09.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33z" />
                   </svg>
                 )}
                 {item.key === 'price-quotes' && (
@@ -109,7 +121,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <nav className="py-4">
             {menuItems.map((item) => (
               <a key={item.href} href={item.href} className={`flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors ${isActive(item.href) ? 'bg-white/5 border-l-4 border-luxury-gold' : ''}`}>
-                <span className="w-5 h-5 text-gray-300">
+                <span className="w-5 h-5 text-gray-300 overflow-visible">
                   {item.key === 'dashboard' && (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
                       <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -128,6 +140,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
                       <path d="M5 12h14" strokeLinecap="round" />
                       <path d="M12 5v14" strokeLinecap="round" />
+                    </svg>
+                  )}
+                  {item.key === 'gallery' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <path d="M3 15l5-5 4 4 5-6 5 7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                  {item.key === 'settings' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-5 h-5 transform scale-90">
+                      <path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" />
+                      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06A2 2 0 015.3 17.88l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.3 6.7a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H11a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09c.12.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33l.06-.06A2 2 0 0119.7 6.12l-.06.06a1.65 1.65 0 00-.33 1.82V11c.09.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33z" />
                     </svg>
                   )}
                   {item.key === 'price-quotes' && (
@@ -169,6 +193,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {pathname.startsWith('/admin/test-drives') && 'Danh sách lái thử'}
                 {pathname.startsWith('/admin/price-quotes') && 'Danh sách báo giá'}
                 {pathname.startsWith('/admin/customers') && 'Quản lý khách hàng'}
+                {pathname.startsWith('/admin/gallery') && 'Quản lý gallery'}
+                {pathname.startsWith('/admin/settings') && 'Cấu hình'}
               </h1>
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gray-600">Admin Panel</span>

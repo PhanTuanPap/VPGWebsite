@@ -15,6 +15,7 @@ const SEND_MAIL = String(process.env.SEND_MAIL || 'true').toLowerCase() === 'tru
 
 let cachedSmtpUser: string | null = null
 let cachedSmtpPass: string | null = null
+let cachedSendMail: boolean | null = null
 
 async function loadSmtpFromDb() {
   if (cachedSmtpUser !== null && cachedSmtpPass !== null) return { user: cachedSmtpUser, pass: cachedSmtpPass }
@@ -33,8 +34,25 @@ async function loadSmtpFromDb() {
   }
 }
 
+async function loadSendMailFromDb() {
+  if (cachedSendMail !== null) return cachedSendMail
+  try {
+    const row = await prisma.setting.findUnique({ where: { key: 'SEND_MAIL' } })
+    if (row && typeof row.value === 'string') {
+      const v = String(row.value).toLowerCase()
+      cachedSendMail = v === 'true'
+      return cachedSendMail
+    }
+    cachedSendMail = String(process.env.SEND_MAIL || 'true').toLowerCase() === 'true'
+    return cachedSendMail
+  } catch (err) {
+    return String(process.env.SEND_MAIL || 'true').toLowerCase() === 'true'
+  }
+}
+
 export async function sendEmailToAdmin({ subject, text, html, to }: MailOptions) {
-  if (!SEND_MAIL) {
+  const sendMailEnabled = await loadSendMailFromDb()
+  if (!sendMailEnabled) {
     console.log('SEND_MAIL disabled; skipping email send')
     return
   }
