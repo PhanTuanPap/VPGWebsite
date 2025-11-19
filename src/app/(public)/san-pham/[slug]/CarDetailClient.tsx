@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Toast from '@/components/Toast'
 
@@ -14,17 +14,24 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
   const [showTestDriveModal, setShowTestDriveModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [toast, setToast] = useState({ visible: false, message: '' })
+  const [contactAdmin, setContactAdmin] = useState('')
+  const [dismissedPopup, setDismissedPopup] = useState(false)
 
   const handlePriceQuote = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
     const formData = new FormData(e.currentTarget)
 
+    const selectedVersionId = formData.get('versionId')
+    const version = car.versions?.find((v: any) => String(v.id) === String(selectedVersionId))
+
     const data = {
       fullName: formData.get('fullName'),
       phone: formData.get('phone'),
       carId: car.id,
       carName: car.name,
+      versionId: version?.id || null,
+      versionName: version?.name || null,
       paymentType: formData.get('paymentType')
     }
 
@@ -47,6 +54,27 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
       setIsSubmitting(false)
     }
   }
+
+  useEffect(() => {
+    // fetch CONTACT_ADMIN from settings
+    fetch('/api/settings')
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const contactA = data.find((s: any) => s.key === 'CONTACT_ADMIN')
+          setContactAdmin(contactA?.value || '')
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    if (dismissedPopup || showPriceQuoteModal) return
+    const t = setTimeout(() => {
+      setShowPriceQuoteModal(true)
+    }, 5000)
+    return () => clearTimeout(t)
+  }, [dismissedPopup, showPriceQuoteModal])
 
   const handleTestDrive = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -206,6 +234,19 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
                 <label className="block mb-2 font-medium">Số điện thoại</label>
                 <input type="tel" name="phone" required className="input-custom" />
               </div>
+
+              {car.versions && car.versions.length > 0 && (
+                <div className="mb-4">
+                  <label className="block mb-2 font-medium">Chọn mẫu xe</label>
+                  <select name="versionId" className="input-custom">
+                    <option value="">-- Chọn phiên bản (mặc định: {car.versions[0].name}) --</option>
+                    {car.versions.map((v: any) => (
+                      <option key={v.id} value={v.id}>{v.name} - {Number(v.price).toLocaleString('vi-VN')} VNĐ</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="mb-6">
                 <label className="block mb-2 font-medium">Hình thức thanh toán</label>
                 <select name="paymentType" required className="input-custom">
@@ -213,8 +254,17 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
                   <option value="installment">Trả góp</option>
                 </select>
               </div>
+
+              <div className="mb-4 text-sm text-gray-700">
+                Quý khách vui lòng liên hệ {contactAdmin || '{CONTACT_ADMIN}'} hoặc điền vào biểu mẫu dưới đây.
+              </div>
+
               <div className="flex gap-3">
-                <button type="button" onClick={() => setShowPriceQuoteModal(false)} className="btn-secondary flex-1">
+                <button
+                  type="button"
+                  onClick={() => { setShowPriceQuoteModal(false); setDismissedPopup(true); }}
+                  className="btn-secondary flex-1"
+                >
                   Hủy
                 </button>
                 <button type="submit" className="btn-primary flex-1 flex items-center justify-center">
