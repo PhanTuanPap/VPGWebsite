@@ -13,13 +13,19 @@ export async function GET() {
 
     const files = fs.readdirSync(UPLOAD_DIR).filter(f => !f.startsWith('.'))
 
-    // find which files are referenced in CarImage.imageUrl
-    const images = await prisma.carImage.findMany({ select: { imageUrl: true } })
-    const usedUrls = new Set(images.map(i => i.imageUrl))
+    // find which files are referenced in various DB fields
+    const carImages = await prisma.carImage.findMany({ select: { imageUrl: true } })
+    const carMainOg = await prisma.car.findMany({ select: { mainImage: true, ogImage: true } })
+    const customers = await prisma.customer.findMany({ select: { imageUrl: true } })
 
     const list = files.map(f => {
       const rel = `/uploads/${f}`
-      return { name: f, url: rel, used: usedUrls.has(rel), size: fs.statSync(path.join(UPLOAD_DIR, f)).size }
+      // consider a file used if any DB field equals the rel or endsWith the rel (handles absolute URLs)
+      const usedInCarImage = carImages.some(i => i.imageUrl === rel || (i.imageUrl && i.imageUrl.endsWith && i.imageUrl.endsWith(rel)))
+      const usedInCar = carMainOg.some(c => (c.mainImage === rel) || (c.mainImage && c.mainImage.endsWith && c.mainImage.endsWith(rel)) || (c.ogImage === rel) || (c.ogImage && c.ogImage.endsWith && c.ogImage.endsWith(rel)))
+      const usedInCustomer = customers.some(c => c.imageUrl === rel || (c.imageUrl && c.imageUrl.endsWith && c.imageUrl.endsWith(rel)))
+      const used = usedInCarImage || usedInCar || usedInCustomer
+      return { name: f, url: rel, used, size: fs.statSync(path.join(UPLOAD_DIR, f)).size }
     })
 
     return NextResponse.json(list)
@@ -38,12 +44,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'File not found' }, { status: 404 })
     }
 
-    // Prevent deleting if file is used in DB
-    const rel = `/uploads/${name}`
-    const used = await prisma.carImage.findFirst({ where: { imageUrl: rel } })
-    if (used) {
-      return NextResponse.json({ error: 'File is used by a CarImage' }, { status: 400 })
-    }
+    // Always remove the file from the uploads directory when requested
 
     fs.unlinkSync(filePath)
     return NextResponse.json({ success: true })

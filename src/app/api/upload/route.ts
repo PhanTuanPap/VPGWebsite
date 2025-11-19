@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import { join, isAbsolute } from 'path'
 import { existsSync } from 'fs'
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request: Request) {
   try {
@@ -46,6 +47,31 @@ export async function POST(request: Request) {
     } else {
       // relative but not under public, assume it's mounted at root (e.g. 'uploads')
       publicUrl = '/' + normalizedConfigured.replace(/^\.\//, '') + `/${filename}`
+    }
+
+    // If admin requested, also create a CarImage record in DB
+    // form field 'createDb' can be 'true', and optional 'imageType' and 'carId' can be provided
+    try {
+      const createDb = formData.get('createDb') as string | null
+      if (createDb === 'true') {
+        const imageType = (formData.get('imageType') as string) || 'banner'
+        const carId = formData.get('carId') as string | null
+        const data: any = {
+          imageUrl: publicUrl,
+          imageType,
+          order: 0
+        }
+        if (carId && carId.length > 0) data.carId = carId
+        try {
+          await prisma.carImage.create({ data })
+        } catch (dbErr) {
+          console.error('Failed to create CarImage record:', dbErr)
+          return NextResponse.json({ error: 'Failed to create CarImage record', details: String(dbErr) }, { status: 500 })
+        }
+      }
+    } catch (e) {
+      console.error('Upload handler error while processing createDb:', e)
+      return NextResponse.json({ error: 'Upload handler error', details: String(e) }, { status: 500 })
     }
 
     return NextResponse.json({

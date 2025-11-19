@@ -8,13 +8,41 @@ import Image from 'next/image'
 export default function HomePage() {
   const [cars, setCars] = useState<any[]>([])
   const [customers, setCustomers] = useState<any[]>([])
+  const [siteBanners, setSiteBanners] = useState<any[]>([])
   const [currentSlide, setCurrentSlide] = useState(0)
   const [currentCustomerSlide, setCurrentCustomerSlide] = useState(0)
+
+  // compute how many customer items are visible per viewport width
+  const getVisibleCount = () => {
+    if (typeof window === 'undefined') return 1
+    const w = window.innerWidth
+    if (w >= 1024) return 3 // lg
+    if (w >= 768) return 2 // md
+    return 1 // sm
+  }
+
+  const [visibleCount, setVisibleCount] = useState(1)
+
+  useEffect(() => {
+    const onResize = () => setVisibleCount(getVisibleCount())
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   useEffect(() => {
     fetch('/api/cars')
       .then(res => res.json())
       .then(data => setCars(data))
+      .catch(err => console.error(err))
+
+    fetch('/api/car-images')
+      .then(res => res.json())
+      .then(data => {
+        // site banners are car images with imageType 'banner' and no carId
+        const banners = (data || []).filter((img: any) => img.imageType === 'banner' && !img.carId)
+        setSiteBanners(banners)
+      })
       .catch(err => console.error(err))
 
     fetch('/api/customers')
@@ -25,85 +53,77 @@ export default function HomePage() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % Math.max(cars.length, 1))
+      setCurrentSlide((prev) => (prev + 1) % Math.max(siteBanners.length, 1))
     }, 5000)
     return () => clearInterval(timer)
-  }, [cars.length])
+  }, [siteBanners.length])
 
   useEffect(() => {
-    if (customers.length <= 3) return // No need to slide if all fit on screen
-    
+    if (customers.length === 0) return
+
+    const maxIndex = Math.max(0, customers.length - visibleCount)
+    // clamp current slide when visibleCount or customers change
+    setCurrentCustomerSlide((prev) => Math.min(prev, maxIndex))
+
+    if (maxIndex === 0) return
+
     const timer = setInterval(() => {
-      setCurrentCustomerSlide((prev) => (prev + 1) % customers.length)
+      setCurrentCustomerSlide((prev) => (prev >= maxIndex ? 0 : prev + 1))
     }, 3000)
+
     return () => clearInterval(timer)
-  }, [customers.length])
+  }, [customers.length, visibleCount])
 
   return (
     <div>
       {/* Hero Banner Slider */}
-      <section className="relative h-[60vh] md:h-[80vh] bg-gray-900 overflow-hidden">
-        {cars.length > 0 && (
-          <>
-            {cars.map((car, index) => {
-              const bannerImage = car.images?.find((img: any) => img.imageType === 'banner')?.imageUrl || car.mainImage
-              return (
-              <div
-                key={car.id}
-                className={`absolute inset-0 transition-opacity duration-1000 ${
-                  index === currentSlide ? 'opacity-100' : 'opacity-0'
-                }`}
-              >
-                {bannerImage && (
-                  <Image
-                    src={bannerImage}
-                    alt={car.name}
-                    fill
-                    className="object-cover"
-                    priority={index === 0}
-                  />
-                )}
-                <div className="absolute inset-0 bg-black bg-opacity-40 !bg-opacity-0" />
-                <div className="absolute inset-0 flex items-center justify-center text-center text-white">
-                  <div className='hidden'>
-                    <h1 className="text-4xl md:text-6xl font-bold mb-4">{car.name}</h1>
-                    <p className="text-xl md:text-2xl mb-8">
-                      {car.versions && car.versions.length > 0 && 
-                        `Từ ${Number(car.versions[0].price).toLocaleString('vi-VN')} VNĐ`
-                      }
-                    </p>
-                    <Link href={`/cars/${car.slug}`} className="btn-primary inline-block">
-                      Xem chi tiết
-                    </Link>
+      <section className="relative bg-gray-900">
+        {siteBanners.length > 0 && (
+          <div className="w-full max-w-full mx-auto ">
+            <div className="relative aspect-[16/9] mx-auto overflow-hidden ">
+              {siteBanners.map((item: any, index: number) => {
+                const bannerImage = item.imageUrl
+                return (
+                  <div
+                    key={item.id || index}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
+                    {bannerImage && (
+                      <Image
+                        src={bannerImage}
+                        alt={item.name || 'Banner'}
+                        fill
+                        className="object-cover"
+                        priority={index === 0}
+                      />
+                    )}
+                    {/* <div className="absolute inset-0 bg-black bg-opacity-40" /> */}
                   </div>
-                </div>
+                )
+              })}
+
+              {/* Slider dots */}
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
+                {siteBanners.map((_: any, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-3 h-3 rounded-full transition-all ${index === currentSlide ? 'bg-luxury-gold w-8' : 'bg-white bg-opacity-50'}`}
+                  />
+                ))}
               </div>
-            )})}
-            
-            {/* Slider dots */}
-            <div className="absolute bottom-8 left-0 right-0 flex justify-center space-x-2">
-              {cars.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all ${
-                    index === currentSlide ? 'bg-luxury-gold w-8' : 'bg-white bg-opacity-50'
-                  }`}
-                />
-              ))}
             </div>
-          </>
+          </div>
         )}
       </section>
 
       {/* Quick Actions */}
-      <section className="py-16 bg-gradient-to-r from-luxury-charcoal to-gray-800">
+      <section className="py-4 md:py-10 bg-gradient-to-r from-luxury-charcoal to-gray-800">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6">
             <Link href="/bang-gia" className="group">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 text-center hover:bg-white/20 transition-all duration-300 border border-white/20 h-full">
-                <div className="w-16 h-16 bg-luxury-gold rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg py-1 px-2 md:py-3 md:px-6 text-center hover:bg-white/20 transition-all duration-300 border border-white/20 h-full md:min-h-[180px]">
+                <div className="w-6 h-6 md:w-16 md:h-16 bg-luxury-gold hidden md:flex rounded-full flex items-center justify-center mx-auto mb-1 md:mb-4 group-hover:scale-110 transition-transform">
+                  <svg className="w-4 h-4 md:w-8 md:h-8 text-white " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
@@ -113,9 +133,9 @@ export default function HomePage() {
             </Link>
 
             <Link href="/tinh-tien-tra-gop" className="group">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 text-center hover:bg-white/20 transition-all duration-300 border border-white/20 h-full">
-                <div className="w-16 h-16 bg-luxury-gold rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg py-1 px-2 md:py-3 md:px-6 text-center hover:bg-white/20 transition-all duration-300 border border-white/20 h-full md:min-h-[180px]">
+                <div className="w-6 h-6 md:w-16 md:h-16 bg-luxury-gold hidden md:flex rounded-full flex items-center justify-center mx-auto mb-1 md:mb-4 group-hover:scale-110 transition-transform">
+                  <svg className="w-4 h-4 md:w-8 md:h-8 text-white " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
                 </div>
@@ -125,9 +145,9 @@ export default function HomePage() {
             </Link>
 
             <Link href="/bang-gia" className="group">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8 text-center hover:bg-white/20 transition-all duration-300 border border-white/20 h-full">
-                <div className="w-16 h-16 bg-luxury-gold rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg py-1 px-2 md:py-3 md:px-6 text-center hover:bg-white/20 transition-all duration-300 border border-white/20 h-full md:min-h-[180px]">
+                <div className="w-6 h-6 md:w-16 md:h-16 bg-luxury-gold hidden md:flex rounded-full flex items-center justify-center mx-auto mb-1 md:mb-4 group-hover:scale-110 transition-transform">
+                  <svg className="w-4 h-4 md:w-8 md:h-8 text-white " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                   </svg>
                 </div>
@@ -139,6 +159,48 @@ export default function HomePage() {
         </div>
       </section>
 
+
+
+      {/* Cars List */}
+      <section className="py-8 md:py-10 bg-gray-50">
+        <div className="container-custom">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Dòng xe VinFast</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-8">
+            {cars.map((car) => {
+              const mainImage = car.images?.find((img: any) => img.imageType === 'main')?.imageUrl || car.mainImage
+              return (
+                <Link key={car.id} href={`/san-pham/${car.slug}`}>
+                  <div className="card-luxury overflow-hidden group rounded-md">
+                    {car.tag && (
+                      <div className="absolute top-3 right-3 bg-luxury-gold text-white px-3 py-1 rounded text-sm font-semibold z-10">
+                        {TagLabels[car.tag] || 'Tag'}
+                      </div>
+                    )}
+                    {mainImage && (
+                      <div className="relative overflow-hidden aspect-[16/9] w-full">
+                        <Image
+                          src={mainImage}
+                          alt={car.name}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-300 !h-auto"
+                        />
+                      </div>
+                    )}
+                    <div className="py-2 px-3 md:p-3 text-center">
+                      <h3 className="text-lg md:text-2xl font-bold mb-0 text-[#666600]">{car.name}</h3>
+                      {car.versions && car.versions.length > 0 && (
+                        <p className="text-lg text-luxury-gold md:text-xl font-semibold">
+                          {Number(car.versions[0].price).toLocaleString('vi-VN')} VNĐ
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      </section>
       {/* Why Choose Us */}
       <section className="py-16 bg-white">
         <div className="container-custom">
@@ -148,7 +210,7 @@ export default function HomePage() {
               <h2 className="text-xl md:text-2xl font-bold mb-6 text-luxury-charcoal">
                 TẠI SAO NÊN MUA XE VỚI VINFAST AN GIANG?
               </h2>
-              
+
               <div className="space-y-4">
                 <div className="flex gap-3">
                   <div className="flex-shrink-0">
@@ -228,47 +290,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Cars List */}
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Dòng xe VinFast</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {cars.map((car) => {
-              const mainImage = car.images?.find((img: any) => img.imageType === 'main')?.imageUrl || car.mainImage
-              return (
-              <Link key={car.id} href={`/san-pham/${car.slug}`}>
-                <div className="card-luxury overflow-hidden group">
-                  {car.tag && (
-                    <div className="absolute top-3 right-3 bg-luxury-gold text-white px-3 py-1 rounded text-sm font-semibold z-10">
-                      {TagLabels[car.tag] || 'Tag'}
-                    </div>
-                  )}
-                  {mainImage && (
-                    <div className="relative h-64 overflow-hidden">
-                      <Image
-                        src={mainImage}
-                        alt={car.name}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold mb-2">{car.name}</h3>
-                    {car.versions && car.versions.length > 0 && (
-                      <p className="text-luxury-gold text-xl font-semibold">
-                        Từ {Number(car.versions[0].price).toLocaleString('vi-VN')} VNĐ
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            )})}
-          </div>
-        </div>
-      </section>
-
       {/* Customers Slider */}
       {customers.length > 0 && (
         <section className="py-16 bg-white">
@@ -278,12 +299,12 @@ export default function HomePage() {
               <div 
                 className="flex transition-transform duration-500 ease-in-out"
                 style={{
-                  transform: `translateX(-${currentCustomerSlide * (100 / customers.length)}%)`
+                  transform: `translateX(-${currentCustomerSlide * (100 / Math.max(visibleCount, 1))}%)`
                 }}
               >
                 {customers.map((customer) => (
-                  <div 
-                    key={customer.id} 
+                  <div
+                    key={customer.id}
                     className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-4"
                   >
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow h-full">
@@ -302,17 +323,16 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
-              
+
               {/* Slider dots */}
-              {customers.length > 3 && (
+              {/* compute dots based on visible count and number of pages */}
+              {customers.length > visibleCount && (
                 <div className="flex justify-center mt-6 space-x-2">
-                  {customers.map((_, index) => (
+                  {Array.from({ length: Math.max(1, customers.length - visibleCount + 1) }).map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentCustomerSlide(index)}
-                      className={`w-3 h-3 rounded-full transition-all ${
-                        index === currentCustomerSlide ? 'bg-luxury-gold w-8' : 'bg-gray-300'
-                      }`}
+                      className={`w-3 h-3 rounded-full transition-all ${index === currentCustomerSlide ? 'bg-luxury-gold w-8' : 'bg-gray-300'}`}
                     />
                   ))}
                 </div>

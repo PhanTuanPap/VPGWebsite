@@ -62,13 +62,13 @@ model CarVersion {
 
 model CarImage {
   id        String   @id @default(cuid())
-  carId     String
+  carId     String?
   imageUrl  String
   imageType String   // "banner", "main", "gallery" — allow multiple banner images for site banner management
   order     Int      @default(0)
   createdAt DateTime @default(now())
   
-  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+  car       Car?     @relation(fields: [carId], references: [id], onDelete: Cascade)
 
   @@map("car_images")
 }
