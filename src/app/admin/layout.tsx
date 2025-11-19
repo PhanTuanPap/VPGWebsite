@@ -11,6 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin', label: 'Dashboard', key: 'dashboard' },
     { href: '/admin/cars', label: 'Quản lý xe', key: 'cars' },
     { href: '/admin/gallery', label: 'Quản lý gallery', key: 'gallery' },
+    { href: '/admin/settings', label: 'Cấu hình', key: 'settings' },
     { href: '/admin/test-drives', label: 'Lái thử', key: 'test-drives' },
     { href: '/admin/price-quotes', label: 'Báo giá', key: 'price-quotes' },
     { href: '/admin/customers', label: 'Khách hàng', key: 'customers' },

@@ -5,22 +5,44 @@ type MailOptions = {
   to?: string
 }
 
+import { prisma } from '@/lib/prisma'
+
 const SMTP_HOST = process.env.SMTP_HOST || ''
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587)
-const SMTP_USER = process.env.SMTP_USER || ''
-const SMTP_PASS = process.env.SMTP_PASS || ''
 const EMAIL_ADMIN = process.env.EMAIL_ADMIN || ''
 const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || ''
 const SEND_MAIL = String(process.env.SEND_MAIL || 'true').toLowerCase() === 'true'
+
+let cachedSmtpUser: string | null = null
+let cachedSmtpPass: string | null = null
+
+async function loadSmtpFromDb() {
+  if (cachedSmtpUser !== null && cachedSmtpPass !== null) return { user: cachedSmtpUser, pass: cachedSmtpPass }
+
+  try {
+    type SettingRow = { key: string; value: string }
+    const settings = await prisma.setting.findMany({ where: { key: { in: ['SMTP_USER', 'SMTP_PASS'] } } }) as SettingRow[]
+    const user = settings.find((s: SettingRow) => s.key === 'SMTP_USER')?.value || ''
+    const pass = settings.find((s: SettingRow) => s.key === 'SMTP_PASS')?.value || ''
+    cachedSmtpUser = user
+    cachedSmtpPass = pass
+    return { user, pass }
+  } catch (err) {
+    // If DB is not available or error, fallback to env
+    return { user: process.env.SMTP_USER || '', pass: process.env.SMTP_PASS || '' }
+  }
+}
 
 export async function sendEmailToAdmin({ subject, text, html, to }: MailOptions) {
   if (!SEND_MAIL) {
     console.log('SEND_MAIL disabled; skipping email send')
     return
   }
+  debugger
+  const { user: SMTP_USER, pass: SMTP_PASS } = await loadSmtpFromDb()
 
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !EMAIL_ADMIN) {
-    console.warn('SMTP not configured: missing env vars')
+    console.warn('SMTP not configured: missing settings or env vars')
     return
   }
 
@@ -47,7 +69,7 @@ export async function sendEmailToAdmin({ subject, text, html, to }: MailOptions)
 
   try {
     const info = await transporter.sendMail(mailOptions)
-    console.log('Email sent', info.messageId)
+    console.log('Email sent user', SMTP_USER, info.messageId)
   } catch (err) {
     console.error('Failed to send email', err)
   }
