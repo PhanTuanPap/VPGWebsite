@@ -115,7 +115,7 @@ export default function ContactBubbles() {
           <div key={it.key} className="relative flex items-center" style={{ zIndex: 10 }}>
             <a href={it.href} {...props}>
               <span style={ringStyle} />
-              {it.icon}
+              <span style={{ display: 'inline-block', animation: `shake 1.2s ${delay} infinite ease-in-out` }}>{it.icon}</span>
             </a>
             {it.key === 'contact' ? (
               <span style={{ backgroundColor: "red" }} className="-ml-3  px-3 py-2 pl-6 rounded-r-full text-sm bg-white/95 text-white shadow-sm max-w-xs truncate card-luxury">
@@ -140,6 +140,16 @@ export default function ContactBubbles() {
               -webkit-transform: scale3d(1, 1, 1);
               transform: scale3d(1, 1, 1);
           }
+        }
+
+        @keyframes shake {
+          0% { transform: rotate(-12deg) translateY(0); }
+          15% { transform: rotate(14deg) translateY(-3px); }
+          30% { transform: rotate(-10deg) translateY(0); }
+          50% { transform: rotate(10deg) translateY(-2px); }
+          70% { transform: rotate(-6deg) translateY(0); }
+          85% { transform: rotate(6deg) translateY(-1px); }
+          100% { transform: rotate(-12deg) translateY(0); }
         }
       `}</style>
     </div>
