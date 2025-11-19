@@ -5,6 +5,9 @@ export default function AdminSettingsPage() {
     const [smtpUser, setSmtpUser] = useState('')
     const [smtpPass, setSmtpPass] = useState('')
     const [sendMail, setSendMail] = useState(true)
+    const [contactAdmin, setContactAdmin] = useState('')
+    const [zaloAdmin, setZaloAdmin] = useState('')
+    const [facebookAdmin, setFacebookAdmin] = useState('')
     const [message, setMessage] = useState('')
 
     useEffect(() => {
@@ -15,9 +18,15 @@ export default function AdminSettingsPage() {
                     const usr = data.find((s: any) => s.key === 'SMTP_USER')
                     const pass = data.find((s: any) => s.key === 'SMTP_PASS')
                     const send = data.find((s: any) => s.key === 'SEND_MAIL')
+                    const contactA = data.find((s: any) => s.key === 'CONTACT_ADMIN')
+                    const zalo = data.find((s: any) => s.key === 'ZALO_ADMIN')
+                    const fb = data.find((s: any) => s.key === 'FACEBOOK_ADMIN')
                     if (usr) setSmtpUser(usr.value)
                     if (pass) setSmtpPass(pass.value)
                     if (send) setSendMail(String(send.value).toLowerCase() === 'true')
+                    if (contactA) setContactAdmin(contactA.value)
+                    if (zalo) setZaloAdmin(zalo.value)
+                    if (fb) setFacebookAdmin(fb.value)
                 }
             })
             .catch(() => { })
@@ -49,6 +58,10 @@ export default function AdminSettingsPage() {
             await saveSetting('SMTP_USER', smtpUser)
             await saveSetting('SMTP_PASS', smtpPass)
         }
+        // Save contact fields
+        await saveSetting('CONTACT_ADMIN', contactAdmin)
+        await saveSetting('ZALO_ADMIN', zaloAdmin)
+        await saveSetting('FACEBOOK_ADMIN', facebookAdmin)
     }
 
     return (
@@ -78,7 +91,20 @@ export default function AdminSettingsPage() {
                         </div>
                     </>
                 )}
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại quản trị (CONTACT_ADMIN)</label>
+                    <input type="text" value={contactAdmin} onChange={(e) => setContactAdmin(e.target.value)} className="input-custom w-full" />
+                </div>
 
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Zalo quản trị (ZALO_ADMIN)</label>
+                    <input type="text" value={zaloAdmin} onChange={(e) => setZaloAdmin(e.target.value)} className="input-custom w-full" />
+                </div>
+
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Facebook quản trị (FACEBOOK_ADMIN)</label>
+                    <input type="text" value={facebookAdmin} onChange={(e) => setFacebookAdmin(e.target.value)} className="input-custom w-full" />
+                </div>
 
                 <div className="flex items-center gap-3">
                     <button onClick={handleSaveAll} className="btn-primary">Lưu</button>

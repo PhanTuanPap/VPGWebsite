@@ -1,5 +1,6 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import ContactBubbles from '@/components/ContactBubbles'
 
 export default function PublicLayout({
   children,
@@ -9,6 +10,7 @@ export default function PublicLayout({
   return (
     <>
       <Header />
+      <ContactBubbles />
       <main className="min-h-screen">{children}</main>
       <Footer />
     </>

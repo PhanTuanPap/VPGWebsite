@@ -10,11 +10,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const menuItems = [
     { href: '/admin', label: 'Dashboard', key: 'dashboard' },
     { href: '/admin/cars', label: 'Quản lý xe', key: 'cars' },
-    { href: '/admin/gallery', label: 'Quản lý gallery', key: 'gallery' },
-    { href: '/admin/settings', label: 'Cấu hình', key: 'settings' },
+   
     { href: '/admin/test-drives', label: 'Lái thử', key: 'test-drives' },
     { href: '/admin/price-quotes', label: 'Báo giá', key: 'price-quotes' },
     { href: '/admin/customers', label: 'Khách hàng', key: 'customers' },
+     { href: '/admin/gallery', label: 'Quản lý gallery', key: 'gallery' },
+    { href: '/admin/settings', label: 'Cấu hình', key: 'settings' },
   ]
 
   const isActive = (href: string) => {
@@ -71,18 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <path d="M12 5v14" strokeLinecap="round" />
                   </svg>
                 )}
-                {item.key === 'gallery' && (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="M3 15l5-5 4 4 5-6 5 7" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
-                {item.key === 'settings' && (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-5 h-5 transform scale-90">
-                    <path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" />
-                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06A2 2 0 015.3 17.88l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.3 6.7a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H11a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09c.12.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33l.06-.06A2 2 0 0119.7 6.12l-.06.06a1.65 1.65 0 00-.33 1.82V11c.09.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33z" />
-                  </svg>
-                )}
+
                 {item.key === 'price-quotes' && (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
                     <path d="M12 1v22" strokeLinecap="round" />
@@ -93,6 +83,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
                     <path d="M12 12a4 4 0 100-8 4 4 0 000 8z" />
                     <path d="M3 21a9 9 0 0118 0" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+                {item.key === 'gallery' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M3 15l5-5 4 4 5-6 5 7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+                {item.key === 'settings' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-5 h-5 transform scale-90">
+                    <path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" />
+                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06A2 2 0 015.3 17.88l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.3 6.7a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H11a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09c.12.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33l.06-.06A2 2 0 0119.7 6.12l-.06.06a1.65 1.65 0 00-.33 1.82V11c.09.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33z" />
                   </svg>
                 )}
               </span>
@@ -142,18 +144,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       <path d="M12 5v14" strokeLinecap="round" />
                     </svg>
                   )}
-                  {item.key === 'gallery' && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-                      <rect x="3" y="5" width="18" height="14" rx="2" />
-                      <path d="M3 15l5-5 4 4 5-6 5 7" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                  {item.key === 'settings' && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-5 h-5 transform scale-90">
-                      <path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" />
-                      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06A2 2 0 015.3 17.88l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.3 6.7a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H11a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09c.12.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33l.06-.06A2 2 0 0119.7 6.12l-.06.06a1.65 1.65 0 00-.33 1.82V11c.09.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33z" />
-                    </svg>
-                  )}
+
                   {item.key === 'price-quotes' && (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
                       <path d="M12 1v22" strokeLinecap="round" />
@@ -164,6 +155,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
                       <path d="M12 12a4 4 0 100-8 4 4 0 000 8z" />
                       <path d="M3 21a9 9 0 0118 0" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                  {item.key === 'gallery' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <path d="M3 15l5-5 4 4 5-6 5 7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                  {item.key === 'settings' && (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-5 h-5 transform scale-90">
+                      <path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" />
+                      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06A2 2 0 015.3 17.88l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82L4.3 6.7a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H11a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09c.12.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33l.06-.06A2 2 0 0119.7 6.12l-.06.06a1.65 1.65 0 00-.33 1.82V11c.09.58.52 1.07 1 1.51.6.53 1.4.67 1.82.33z" />
                     </svg>
                   )}
                 </span>
