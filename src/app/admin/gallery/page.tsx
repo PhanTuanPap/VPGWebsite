@@ -159,7 +159,7 @@ export default function AdminGalleryPage() {
               ))}
               <div className="border-2 border-dashed border-gray-300 rounded h-24 flex items-center justify-center hover:border-luxury-gold transition-colors">
                 <label className="cursor-pointer text-center w-full h-full flex items-center justify-center">
-                  <span className="text-gray-500">+ Thêm ảnh</span>
+                  <span className="text-gray-500">+ Thêm ảnh (Tỷ lệ 16:9)</span>
                   <input type="file" accept="image/*" multiple onChange={handleAddImages} className="hidden" />
                 </label>
               </div>

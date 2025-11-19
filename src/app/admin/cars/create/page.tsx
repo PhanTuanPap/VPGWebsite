@@ -12,6 +12,23 @@ interface PendingImage {
 
 export default function CreateCarPage() {
   const router = useRouter()
+  const [slug, setSlug] = useState('')
+  const [name, setName] = useState('')
+  const [slugEdited, setSlugEdited] = useState(false)
+
+  const generateSlug = (value: string) => {
+    // normalize and remove diacritics, then keep only [a-z0-9 -], replace spaces with -, collapse dashes
+    const s = value
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\n+a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+    return s
+  }
   const [versions, setVersions] = useState<Array<{ name: string; price: string }>>([
     { name: '', price: '' }
   ])
@@ -141,6 +158,14 @@ export default function CreateCarPage() {
                 type="text"
                 name="name"
                 required
+                value={name}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setName(v)
+                  if (!slugEdited) {
+                    setSlug(generateSlug(v))
+                  }
+                }}
                 className="input-custom"
                 placeholder="VinFast VF 8"
               />
@@ -148,13 +173,23 @@ export default function CreateCarPage() {
 
             <div>
               <label className="block mb-2 font-medium">Slug *</label>
-              <input
-                type="text"
-                name="slug"
-                required
-                className="input-custom"
-                placeholder="vinfast-vf-8"
-              />
+              <div className="gap-0 flex items-center h-12 border border-gray-300 rounded-lg px-2 py-2">
+                <span className="text-luxury-gold">{process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/</span>
+                  <input
+                  type="text"
+                  name="slug"
+                  required
+                  value={slug}
+                  onChange={(e) => {
+                    const sanitized = generateSlug(e.target.value)
+                    setSlug(sanitized)
+                    setSlugEdited(true)
+                  }}
+                  className="input-custom pl-0 border-x-0 border-none rounded-none focus:ring-0 focus:border-luxury-gold flex-1 pb-0 pt-0"
+                  placeholder="vinfast-vf-8"
+                />
+              </div>
+              
             </div>
             <div>
               <label className="block mb-2 font-medium">Tag</label>
@@ -242,10 +277,10 @@ export default function CreateCarPage() {
           <div className="mb-6 pt-6 border-t">
             <h2 className="text-xl font-bold mb-6">Quản lý hình ảnh</h2>
             
-            <div className="mb-8">
+            {/* <div className="mb-8">
               <h3 className="text-lg font-semibold mb-4">Ảnh Banner</h3>
               <p className="text-sm text-gray-500">Quản lý ảnh banner cho website nằm trong mục Quản lý hình ảnh gallery. (Cho phép upload nhiều ảnh với imageType = "banner")</p>
-            </div>
+            </div> */}
 
             {/* Main Image */}
             <div className="mb-8">
@@ -271,7 +306,7 @@ export default function CreateCarPage() {
                 })}
                 <div className="border-2 border-dashed border-gray-300 rounded h-32 flex items-center justify-center hover:border-luxury-gold transition-colors">
                   <label className="cursor-pointer text-center">
-                    <span className="text-gray-500">+ Thêm ảnh chính</span>
+                    <span className="text-gray-500">+ Thêm ảnh (Tỷ lệ 16:9)</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -308,7 +343,7 @@ export default function CreateCarPage() {
                 })}
                 <div className="border-2 border-dashed border-gray-300 rounded h-32 flex items-center justify-center hover:border-luxury-gold transition-colors">
                   <label className="cursor-pointer text-center">
-                    <span className="text-gray-500">+ Thêm ảnh</span>
+                    <span className="text-gray-500">+ Thêm ảnh (Tỷ lệ 16:9)</span>
                     <input
                       type="file"
                       accept="image/*"

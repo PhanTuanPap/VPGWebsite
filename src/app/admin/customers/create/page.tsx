@@ -7,15 +7,45 @@ import Toast from '@/components/Toast'
 export default function CreateCustomerPage() {
   const router = useRouter()
   const [imageUrl, setImageUrl] = useState('')
+  const [pendingImage, setPendingImage] = useState<File | null>(null)
+  const [pendingPreview, setPendingPreview] = useState<string | null>(null)
   const [toast, setToast] = useState({ visible: false, message: '', variant: 'info' as 'info' | 'success' | 'error' | 'warning' })
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
 
+    // If there's a pending image file, upload it first
+    let finalImageUrl: string | null = formData.get('imageUrl') as string | null
+
+    if (pendingImage) {
+      const up = new FormData()
+      up.append('file', pendingImage)
+
+      try {
+        const upRes = await fetch('/api/upload', { method: 'POST', body: up })
+        if (upRes.ok) {
+          const upData = await upRes.json()
+          // Construct a safe URL — prefer returned `url` if provided, otherwise compose and encode filename
+          if (upData.url) {
+            finalImageUrl = upData.url
+          } else if (upData.filename) {
+            const base = '/uploads'
+            finalImageUrl = `${base}/${encodeURIComponent(upData.filename)}`
+          }
+        } else {
+          setToast({ visible: true, message: 'Upload ảnh thất bại', variant: 'error' })
+          return
+        }
+      } catch (err) {
+        setToast({ visible: true, message: 'Upload ảnh thất bại', variant: 'error' })
+        return
+      }
+    }
+
     const data = {
       name: formData.get('name'),
-      imageUrl: formData.get('imageUrl'),
+      imageUrl: finalImageUrl,
       order: Number(formData.get('order'))
     }
 
@@ -37,31 +67,28 @@ export default function CreateCustomerPage() {
     }
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const formData = new FormData()
-    formData.append('file', file)
+    // set pending file and preview; do not upload yet
+    setPendingImage(file)
+    const url = URL.createObjectURL(file)
+    setPendingPreview(url)
 
-    try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        const imageInput = document.querySelector<HTMLInputElement>('input[name="imageUrl"]')
-        if (imageInput) {
-          imageInput.value = data.url
-        }
-        setImageUrl(data.url)
-        setToast({ visible: true, message: 'Upload thành công!', variant: 'success' })
-      }
-    } catch (error) {
-      setToast({ visible: true, message: 'Upload thất bại', variant: 'error' })
+    // Also set the text input to a placeholder until upload completes
+    const imageInput = document.querySelector<HTMLInputElement>('input[name="imageUrl"]')
+    if (imageInput) {
+      imageInput.value = ''
     }
+  }
+
+  const handleRemovePending = () => {
+    if (pendingPreview) {
+      URL.revokeObjectURL(pendingPreview)
+    }
+    setPendingImage(null)
+    setPendingPreview(null)
   }
 
   return (
@@ -87,17 +114,43 @@ export default function CreateCustomerPage() {
             <input
               type="text"
               name="imageUrl"
-              className="input-custom mb-2"
+              className="input-custom mb-2 hidden"
               placeholder="/uploads/customer.jpg"
             />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="input-custom"
-            />
-            {imageUrl && (
-              <img src={imageUrl} alt="Preview" className="mt-4 w-32 h-32 rounded-full object-cover" />
+
+            {pendingPreview ? (
+              <div className="relative group w-full h-auto">
+                <img src={pendingPreview} alt="Preview" className="w-full h-auto object-cover rounded-md aspect-[16/9]" />
+                <button
+                  type="button"
+                  onClick={handleRemovePending}
+                  className="absolute top-1 right-1 bg-red-600 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100"
+                >
+                  Xóa
+                </button>
+              </div>
+            ) : imageUrl ? (
+              <div className="relative group w-full h-auto">
+                <img src={imageUrl} alt="Preview" className="w-full h-auto object-cover rounded-md aspect-[16/9]" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageUrl('')
+                    const input = document.querySelector<HTMLInputElement>('input[name="imageUrl"]')
+                    if (input) input.value = ''
+                  }}
+                  className="absolute top-1 right-1 bg-red-600 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100"
+                >
+                  Xóa
+                </button>
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-gray-300 rounded h-24 flex items-center justify-center hover:border-luxury-gold transition-colors">
+                <label className="cursor-pointer text-center w-full h-full flex items-center justify-center">
+                  <span className="text-gray-500">+ Thêm ảnh (Tỷ lệ 16:9)</span>
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                </label>
+              </div>
             )}
           </div>
 
