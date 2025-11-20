@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Toast from '@/components/Toast'
+import { TagLabels, TAG_META } from '@/lib/constants'
 
 export default function BangGiaPage() {
   const [cars, setCars] = useState<any[]>([])
@@ -66,7 +67,26 @@ export default function BangGiaPage() {
           {cars.map((car) => {
             const mainImage = car.images?.find((img: any) => img.imageType === 'main')?.imageUrl || car.mainImage
             return (
-            <div key={car.id} className="card-luxury overflow-hidden">
+            <div key={car.id} className="card-luxury overflow-hidden relative">
+              {car.tag && TAG_META[car.tag] ? (
+                (() => {
+                  const meta = TAG_META[car.tag]
+                  return (
+                    <div className={`absolute top-3 right-3 ${meta.colorClass} px-3 py-1 rounded text-sm font-semibold z-10 flex items-center gap-2`}>
+                      {/* {meta.icon === 'hot' && (
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2v6"/><path d="M6 8c0 4 6 6 6 12"/></svg>
+                      )}
+                      {meta.icon === 'new' && (
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="3"/></svg>
+                      )}
+                      {meta.icon === 'sale' && (
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 12l9 9 9-9-9-9-9 9z"/></svg>
+                      )} */}
+                      <span>{meta.label}</span>
+                    </div>
+                  )
+                })()
+              ) : null}
               {mainImage && (
                 <div className="relative h-64">
                   <Image

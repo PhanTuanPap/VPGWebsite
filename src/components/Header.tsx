@@ -142,7 +142,10 @@ export default function Header() {
 
         {/* Mobile Slide-in Panel with animation */}
         <div className="md:hidden">
-          <div className={`fixed inset-0 z-50 flex transition-opacity duration-300 ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <div
+            className={`fixed inset-0 z-50 flex transition-opacity duration-300 ${isMenuOpen ? 'opacity-100' : 'opacity-0'}`}
+            style={{ pointerEvents: isMenuOpen ? 'auto' : 'none' }}
+          >
             {/* Backdrop */}
             <div onClick={() => setIsMenuOpen(false)} className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${isMenuOpen ? 'opacity-100' : 'opacity-0'}`} />
 

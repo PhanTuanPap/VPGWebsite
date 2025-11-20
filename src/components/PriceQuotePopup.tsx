@@ -1,9 +1,18 @@
-'use client'
+"use client"
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import Toast from '@/components/Toast'
 
 export default function PriceQuotePopup() {
+  const pathname = usePathname()
+
+  // If pathname is not yet available on first render, avoid mounting popup (prevents transient overlays)
+  if (!pathname) return null
+
+  // Do not render site-wide popup inside admin pages
+  if (pathname.startsWith('/admin')) return null
+
   const [show, setShow] = useState(false)
   const [dismissed, setDismissed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -99,7 +108,7 @@ export default function PriceQuotePopup() {
               {contactAdmin ? (
                 <a href={`tel:${contactAdmin}`} className="text-red-500 font-semibold px-2 py-0.5 rounded-sm">{contactAdmin}</a>
               ) : (
-                ''
+                ' quản trị viên '
               )}hoặc điền vào biểu mẫu dưới đây.
             </div>
             <div className="mb-2">

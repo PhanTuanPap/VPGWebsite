@@ -1,6 +1,10 @@
-'use client'
+ 'use client'
 
-import { useState } from 'react'
+import dynamic from 'next/dynamic'
+import { useState, useEffect } from 'react'
+
+// Dynamic import of react-quill (no SSR). Typed as `any` to avoid missing types in this repo.
+const ReactQuill: any = dynamic(() => import('react-quill'), { ssr: false })
 import { useRouter } from 'next/navigation'
 import Toast from '@/components/Toast'
 
@@ -34,6 +38,7 @@ export default function CreateCarPage() {
   ])
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
   const [saving, setSaving] = useState(false)
+  const [article, setArticle] = useState('')
   const [toast, setToast] = useState({ visible: false, message: '', variant: 'info' as 'info' | 'success' | 'error' | 'warning' })
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -214,12 +219,15 @@ export default function CreateCarPage() {
 
           <div className="mb-6">
             <label className="block mb-2 font-medium">Bài viết (HTML)</label>
-            <textarea
-              name="article"
-              rows={10}
-              className="input-custom font-mono text-sm"
-              placeholder="<h2>Giới thiệu</h2><p>...</p>"
-            />
+            <div className="border rounded">
+              {typeof window !== 'undefined' ? (
+                <ReactQuill value={article} onChange={setArticle} />
+              ) : (
+                <textarea readOnly value={article} className="input-custom font-mono text-sm" />
+              )}
+            </div>
+            {/* Hidden input so FormData picks up the article content on submit */}
+            <input type="hidden" name="article" value={article} />
           </div>
 
           {/* SEO Section */}

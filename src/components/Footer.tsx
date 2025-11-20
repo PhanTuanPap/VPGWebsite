@@ -5,12 +5,31 @@ import { useEffect, useState } from 'react'
 
 export default function Footer() {
   const [cars, setCars] = useState<any[]>([])
+  const [contactAdmin, setContactAdmin] = useState('')
+  const [mst, setMstAdmin] = useState('')
+  const [lmst, setLmstAdmin] = useState('')
 
   useEffect(() => {
     fetch('/api/cars')
       .then(res => res.json())
       .then(data => setCars(data))
       .catch(err => console.error(err))
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const contactA = data.find((s: any) => s.key === 'CONTACT_ADMIN')
+          const mst = data.find((s: any) => s.key === 'MST_ADMIN')
+          const lmst = data.find((s: any) => s.key === 'LMST_ADMIN')
+          setContactAdmin(contactA?.value || '')
+          setMstAdmin(mst?.value || '')
+          setLmstAdmin(lmst?.value || '')
+        }
+      })
+      .catch(() => {})
   }, [])
 
   return (
@@ -26,7 +45,8 @@ export default function Footer() {
             </p>
             <div className="space-y-2 text-sm text-gray-400 mt-3">
               <p>Địa chỉ: Số 2070, Trần Hưng Đạo, Mỹ Thới, An Giang</p>
-              <p>Điện thoại: 0363 789 117</p>
+              {contactAdmin && <p>Điện thoại: {contactAdmin}</p>}
+              {mst && <a href={lmst} target='_blank'>MST/MSDN: <span className='text-luxury-gold'>{mst}</span></a>}
               {/* <p>Email: info@vpgauto.vn</p> */}
             </div>
           </div>

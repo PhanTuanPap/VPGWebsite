@@ -22,6 +22,12 @@ export const TagLabels: Record<number, string> = {
   [Tag.BestSale]: 'Best Sale',
 };
 
+export const TAG_META: Record<number, { label: string; colorClass: string; icon: string }> = {
+  [Tag.New]: { label: 'New', colorClass: 'bg-luxury-gold text-white', icon: 'new' },
+  [Tag.Hot]: { label: 'Hot', colorClass: 'bg-red-500 text-white', icon: 'hot' },
+  [Tag.BestSale]: { label: 'Best Sale', colorClass: 'bg-yellow-500 text-white', icon: 'sale' },
+}
+
 export const TestDriveStatusLabels: Record<number, string> = {
   [TestDriveStatus.Pending]: 'Pending',
   [TestDriveStatus.Contacted]: 'Contacted',

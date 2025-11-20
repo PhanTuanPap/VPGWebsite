@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+// Quill editor styles (global). Ensure `react-quill` is installed in the project.
+import 'react-quill/dist/quill.snow.css'
 import { generateSEO, generateOrganizationStructuredData } from '@/lib/seo'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })

@@ -1,10 +1,13 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  // content: [
+  //   './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+  //   './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+  //   './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  // ],
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -21,13 +24,25 @@ const config: Config = {
           800: '#065986',
           900: '#0b4a6f',
         },
+        // red: {
+        //   50: '#fff1f1',
+        //   100: '#ffe4e4',
+        //   200: '#fda4af',
+        //   300: '#fb7185',
+        //   400: '#f43f5e',
+        //   500: '#e11d48',
+        //   600: '#be123c',
+        //   700: '#9f1239',
+        //   800: '#881337',
+        //   900: '#701a2c',
+        // },
         luxury: {
           gold: '#17a2f8',
           darkGold: '#1188d8',
           charcoal: '#1A1A1A',
           silver: '#C0C0C0',
           cream: '#F5F5DC',
-        }
+        },
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],

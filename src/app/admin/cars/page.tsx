@@ -21,6 +21,7 @@ interface Car {
   slug: string
   versions?: any[]
   images?: { id: string; imageUrl: string; imageType: string }[]
+  tag?: number | null
   createdAt: string
 }
 
@@ -68,7 +69,7 @@ export default function AdminCarsPage() {
         header: 'Hình ảnh',
         cell: ({ row }) => {
           const mainImage = row.original.images?.find(img => img.imageType === 'main')
-          debugger
+          
           return mainImage?.imageUrl ? (
             <img 
               src={mainImage?.imageUrl} 
@@ -151,7 +152,8 @@ export default function AdminCarsPage() {
   const table = useReactTable({
     data: cars.filter(c => {
       if (tagFilter) {
-        return String((c as any).tag) === tagFilter
+        const carTag = (c as any).tag
+        return String(typeof carTag === 'undefined' || carTag === null ? '' : carTag) === tagFilter
       }
       return true
     }).filter(c => {

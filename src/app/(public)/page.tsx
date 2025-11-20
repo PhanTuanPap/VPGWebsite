@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { TagLabels } from '@/lib/constants'
+import { TagLabels, TAG_META } from '@/lib/constants'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -170,12 +170,32 @@ export default function HomePage() {
               const mainImage = car.images?.find((img: any) => img.imageType === 'main')?.imageUrl || car.mainImage
               return (
                 <Link key={car.id} href={`/san-pham/${car.slug}`}>
-                  <div className="card-luxury overflow-hidden group rounded-md">
-                    {car.tag && (
+                  <div className="card-luxury overflow-hidden group rounded-md relative">
+                    {car.tag && TAG_META[car.tag] ? (
+                      (() => {
+                        const meta = TAG_META[car.tag]
+                        return (
+                          <div className={`absolute top-3 right-3 ${meta.colorClass} px-3 py-1 rounded text-sm font-semibold z-10 flex items-center gap-2`}>
+                            {/* simple icons */}
+                            {/* {meta.icon === 'hot' && (
+                              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2v6"/><path d="M6 8c0 4 6 6 6 12"/></svg>
+                            )}
+                            {meta.icon === 'new' && (
+                              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="3"/></svg>
+                            )}
+                            {meta.icon === 'sale' && (
+                              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 12l9 9 9-9-9-9-9 9z"/></svg>
+                            )} */}
+                            <span>{meta.label}</span>
+                          </div>
+                        )
+                      })()
+                    ) : null}
+                    {/* {car.tag && (
                       <div className="absolute top-3 right-3 bg-luxury-gold text-white px-3 py-1 rounded text-sm font-semibold z-10">
                         {TagLabels[car.tag] || 'Tag'}
                       </div>
-                    )}
+                    )} */}
                     {mainImage && (
                       <div className="relative overflow-hidden aspect-[16/9] w-full">
                         <Image

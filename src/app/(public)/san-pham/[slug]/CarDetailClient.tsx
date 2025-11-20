@@ -14,7 +14,7 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
   const [showTestDriveModal, setShowTestDriveModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [toast, setToast] = useState({ visible: false, message: '' })
-  const [contactAdmin, setContactAdmin] = useState('')
+  const [contactAdmin, setContactAdmin] = useState('quản trị viên')
   const [dismissedPopup, setDismissedPopup] = useState(false)
 
   const handlePriceQuote = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -256,7 +256,7 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
               </div>
 
               <div className="mb-4 text-sm text-gray-700">
-                Quý khách vui lòng liên hệ {contactAdmin || '{CONTACT_ADMIN}'} hoặc điền vào biểu mẫu dưới đây.
+                Quý khách vui lòng liên hệ {contactAdmin || 'quản trị viên'} hoặc điền vào biểu mẫu dưới đây.
               </div>
 
               <div className="flex gap-3">

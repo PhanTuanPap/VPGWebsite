@@ -1,7 +1,10 @@
-'use client'
+ 'use client'
 
+import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import Toast from '@/components/Toast'
+// Dynamic import of react-quill (no SSR). Cast as any to avoid missing types.
+const ReactQuill: any = dynamic(() => import('react-quill'), { ssr: false })
 import { useRouter, useParams } from 'next/navigation'
 
 interface PendingImage {
@@ -16,6 +19,7 @@ export default function EditCarPage() {
   const [car, setCar] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [article, setArticle] = useState('')
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([])
   const [newVersions, setNewVersions] = useState<Array<{ name: string; price: string }>>([])
@@ -27,6 +31,7 @@ export default function EditCarPage() {
         .then(res => res.json())
         .then(data => {
           setCar(data)
+          setArticle(data.article || '')
           setLoading(false)
         })
         .catch(err => {
@@ -225,12 +230,14 @@ export default function EditCarPage() {
 
           <div className="mb-6">
             <label className="block mb-2 font-medium">Bài viết (HTML)</label>
-            <textarea
-              name="article"
-              defaultValue={car.article || ''}
-              rows={10}
-              className="input-custom font-mono text-sm"
-            />
+            <div className="border rounded">
+              {typeof window !== 'undefined' ? (
+                <ReactQuill value={article} onChange={setArticle} />
+              ) : (
+                <textarea readOnly value={article} className="input-custom font-mono text-sm" />
+              )}
+            </div>
+            <input type="hidden" name="article" value={article} />
           </div>
 
         {/* SEO Section */}
@@ -292,11 +299,7 @@ export default function EditCarPage() {
         <div className="mt-8 pt-6 border-t">
           <h2 className="text-xl font-bold mb-6">Quản lý hình ảnh</h2>
           
-          {/* Banner Image */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Ảnh Banner</h3>
-            <p className="text-sm text-gray-500">Quản lý ảnh banner cho website nằm trong mục Quản lý hình ảnh gallery. (Cho phép upload nhiều ảnh với imageType = "banner")</p>
-          </div>
+         
 
           {/* Main Image */}
           <div className="mb-8">
